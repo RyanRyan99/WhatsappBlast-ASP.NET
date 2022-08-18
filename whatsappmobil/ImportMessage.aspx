@@ -20,7 +20,7 @@
                                 <div class="col">
                                     <div class="mt-2">
                                         <asp:Label runat="server" ID="Label4" CssClass="form-label d-flex" Font-Size="Smaller" Font-Bold="true">Session Devices</asp:Label>
-                                        <asp:DropDownList runat="server" ID="ddlSessionId" CssClass="form-control form-control-sm">
+                                        <asp:DropDownList runat="server" ID="ddlSessionId" CssClass="form-control form-control-sm" AutoPostBack="true" OnSelectedIndexChanged="ddlSessionId_SelectedIndexChanged">
                                             <asp:ListItem Value="">Pilih</asp:ListItem>
                                             <asp:ListItem Value="CIMONE">CIMONE</asp:ListItem>
                                             <asp:ListItem Value="CIMONE1">CIMONE 1</asp:ListItem>
@@ -156,10 +156,11 @@
             });
         });
 
-        function alert(errormessage, icon) {
+        function alert(errormessage, icon, errordesc) {
             Swal.fire({
                 icon: icon,
-                text: errormessage,
+                title: errormessage,
+                text: errordesc,
                 type: 'warning',
                 confirmButtonColor: '#3cd4a4',
             })
