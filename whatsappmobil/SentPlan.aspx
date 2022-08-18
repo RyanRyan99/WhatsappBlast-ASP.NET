@@ -69,6 +69,20 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <div class="mb-1">
+                                                            <asp:Label runat="server" ID="lblsessionid" CssClass="form-label d-flex" Font-Size="Smaller" Font-Bold="true">Devices</asp:Label>
+                                                            <asp:DropDownList runat="server" ID="ddlSessionId" CssClass="form-control form-control-sm" AutoPostBack="true" OnSelectedIndexChanged="ddlSessionId_SelectedIndexChanged">
+                                                                <asp:ListItem Value="">Pilih Devices</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE">CIMONE</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE1">CIMONE 1</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE2">CIMONE 2</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE3">CIMONE 3</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE4">CIMONE 4</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE5">CIMONE 5</asp:ListItem>
+                                                            </asp:DropDownList>
+                                                        </div>
+
                                                         <div class="mb-3" style="display: none;">
                                                             <div class="row">
                                                                 <div class="col">
@@ -197,18 +211,7 @@
                                                             </asp:CheckBoxList>
                                                         </div>
                                                         <hr class="text-success" />
-                                                        <div class="mb-3">
-                                                            <asp:Label runat="server" ID="lblsessionid" CssClass="form-label d-flex" Font-Size="Smaller" Font-Bold="true">Devices</asp:Label>
-                                                            <asp:DropDownList runat="server" ID="ddlSessionId" CssClass="form-control form-control-sm">
-                                                                <asp:ListItem Value="">Pilih Devices</asp:ListItem>
-                                                                <asp:ListItem Value="CIMONE">CIMONE</asp:ListItem>
-                                                                <asp:ListItem Value="CIMONE1">CIMONE 1</asp:ListItem>
-                                                                <asp:ListItem Value="CIMONE2">CIMONE 2</asp:ListItem>
-                                                                <asp:ListItem Value="CIMONE3">CIMONE 3</asp:ListItem>
-                                                                <asp:ListItem Value="CIMONE4">CIMONE 4</asp:ListItem>
-                                                                <asp:ListItem Value="CIMONE5">CIMONE 5</asp:ListItem>
-                                                            </asp:DropDownList>
-                                                        </div>
+                                                        
                                                         <div class="mb-3">
                                                             <asp:Label runat="server" ID="lblCriteriaCust" CssClass="form-label d-flex" Font-Size="Smaller" Font-Bold="true">Kriteria Customer</asp:Label>
                                                         </div>
@@ -799,6 +802,15 @@
             Swal.fire({
                 icon: icon,
                 text: params,
+                type: 'warning',
+                confirmButtonColor: '#3cd4a4',
+            })
+        }
+        function alertsession(params, icon, paramsdesc) {
+            Swal.fire({
+                icon: icon,
+                title: params,
+                text: paramsdesc,
                 type: 'warning',
                 confirmButtonColor: '#3cd4a4',
             })

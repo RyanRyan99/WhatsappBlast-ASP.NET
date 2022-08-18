@@ -168,6 +168,24 @@ namespace whatsappmobil
         protected global::System.Web.UI.WebControls.TextBox txtPlanTitle;
 
         /// <summary>
+        /// lblsessionid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblsessionid;
+
+        /// <summary>
+        /// ddlSessionId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlSessionId;
+
+        /// <summary>
         /// lbltanggalScheduled control.
         /// </summary>
         /// <remarks>
@@ -436,24 +454,6 @@ namespace whatsappmobil
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBoxList checkboxBranch;
-
-        /// <summary>
-        /// lblsessionid control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblsessionid;
-
-        /// <summary>
-        /// ddlSessionId control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlSessionId;
 
         /// <summary>
         /// lblCriteriaCust control.

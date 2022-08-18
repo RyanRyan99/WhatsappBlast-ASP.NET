@@ -483,7 +483,8 @@ namespace whatsappmobil
                 {
                     using (var client = new HttpClient())
                     {
-                        string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + strMedia);
+                        //string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + strMedia);
+                        string filefile = Server.MapPath("Media/" + strMedia);
                         SenderSingleChatMedia SenderSingleChatMedia = new SenderSingleChatMedia { sender = strSenderId, number = strNumber, caption = strMessage, file = filefile };
                         client.BaseAddress = new Uri("http://192.168.100.1:9001/send-media");
                         var response = client.PostAsJsonAsync("", SenderSingleChatMedia).Result;

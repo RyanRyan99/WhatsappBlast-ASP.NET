@@ -7,10 +7,12 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using whatsappmobil.sender;
 using whatsappmobil.ssl;
 
 namespace whatsappmobil
@@ -1641,6 +1643,38 @@ namespace whatsappmobil
             if(ddlViewAllBranch.SelectedValue == "true")
             {
                 BindDataAllBranch();
+            }
+        }
+
+        protected void ddlSessionId_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(ddlSessionId.SelectedValue != "")
+            {
+                try
+                {
+                    using (var client = new HttpClient())
+                    {
+                        SenderReply sen = new SenderReply { sender = ddlSessionId.SelectedValue };
+                        client.BaseAddress = new Uri("http://192.168.100.1:9001/checksession");
+                        var response = client.PostAsJsonAsync("", sen).Result;
+                        if (response.IsSuccessStatusCode)
+                        {
+
+                        }
+                        else
+                        {
+                            if (response.StatusCode.ToString() == "422")
+                            {
+                                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('" + ddlSessionId.SelectedItem.Text + " tidak terhubung', 'warning', 'Harap hubungkan device terlebih dahulu');", true);
+                                ddlSessionId.SelectedValue = "";
+                            }
+                        }
+                    }
+                }
+                catch(Exception ex)
+                {
+
+                }
             }
         }
     }
