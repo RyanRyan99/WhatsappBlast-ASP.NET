@@ -38,7 +38,7 @@
                                 </div>
                                 <div class="col">
                                     <div class="d-flex flex-row-reverse">
-                                        <asp:DropDownList runat="server" ID="ddlViewAllBranch" Width="37" CssClass="form-control form-control-sm gradient-custom-button-1" ForeColor="White" BackColor="Black" AutoPostBack="true" OnSelectedIndexChanged="ddlViewAllBranch_SelectedIndexChanged">
+                                        <asp:DropDownList runat="server" ID="ddlViewAllBranch" Font-Size="Smaller" Width="37" CssClass="form-control form-control-sm gradient-custom-button-1" ForeColor="White" BackColor="Black" AutoPostBack="true" OnSelectedIndexChanged="ddlViewAllBranch_SelectedIndexChanged">
                                             <asp:ListItem Value="false">false</asp:ListItem>
                                             <asp:ListItem Value="true">true</asp:ListItem>
                                         </asp:DropDownList>

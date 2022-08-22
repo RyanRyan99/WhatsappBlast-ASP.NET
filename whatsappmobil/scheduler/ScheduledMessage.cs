@@ -25,7 +25,7 @@ namespace whatsappmobil.scheduler
         private int RandomTime()
         {
             Random rnd = new Random();
-            int number = rnd.Next(5000, 30000);
+            int number = rnd.Next(5000, 20000);
             return number;
         }
         private void ScheduledMessagePlan()
@@ -218,6 +218,7 @@ namespace whatsappmobil.scheduler
                     }
                 }
                 dataReader.Close();
+                //oracleConnection.Close();
             }
             catch (Exception ex)
             {
@@ -227,7 +228,7 @@ namespace whatsappmobil.scheduler
             {
                 oracleConnection.Close();
             }
-
+            
         }
         private void ScheduleSendChat(string senderid, string number, string message, string strid)
         {
@@ -255,7 +256,7 @@ namespace whatsappmobil.scheduler
             }
             catch (Exception ex)
             {
-                plan.getDataTable(@"update trx_whatsapp_message set session_notic = '" + ex + "' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trx_id = '" + strid + "'");
+                plan.getDataTable(@"update trx_whatsapp_message set session_notic = '" + ex + "' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trxid = '" + strid + "'");
             }
         }
         private void ScheduleSendMedia(string senderid, string number, string caption, string file, string strid)
@@ -284,7 +285,7 @@ namespace whatsappmobil.scheduler
             }
             catch (Exception ex)
             {
-                plan.getDataTable(@"update trx_whatsapp_message set session_notic = '" + ex + "' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trx_id = '" + strid + "'");
+                plan.getDataTable(@"update trx_whatsapp_message set session_notic = '" + ex + "' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trxid = '" + strid + "'");
             }
         }
     }

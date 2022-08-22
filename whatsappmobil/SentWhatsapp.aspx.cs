@@ -456,56 +456,49 @@ namespace whatsappmobil
         }
         private void SentRow(string strSenderId, string strNumber, string strMessage, string strTrxId, string strpushname, string strMedia)
         {
-            try
+            if (strMedia == "")
             {
-                if(strMedia == "")
+                using (var client = new HttpClient())
                 {
-                    using (var client = new HttpClient())
+                    Sender sen = new Sender { sender = strSenderId, number = strNumber, message = strMessage };
+                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-message");
+                    var response = client.PostAsJsonAsync("", sen).Result;
+                    if (response.IsSuccessStatusCode)
                     {
-                        Sender sen = new Sender { sender = strSenderId, number = strNumber, message = strMessage };
-                        client.BaseAddress = new Uri("http://192.168.100.1:9001/send-message");
-                        var response = client.PostAsJsonAsync("", sen).Result;
-                        if (response.IsSuccessStatusCode)
-                        {
-                            fcn.UpdateStatusHeader(strTrxId);
-                            fcn.UpdateStatusMessage(strTrxId, strNumber, "1");
-                        }
-                        else
-                        {
-                            if (response.StatusCode.ToString() == "422")
-                            {
-                                fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
-                            }
-                        }
+                        fcn.UpdateStatusHeader(strTrxId);
+                        fcn.UpdateStatusMessage(strTrxId, strNumber, "1");
                     }
-                }
-                else
-                {
-                    using (var client = new HttpClient())
+                    else
                     {
-                        //string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + strMedia);
-                        string filefile = Server.MapPath("Media/" + strMedia);
-                        SenderSingleChatMedia SenderSingleChatMedia = new SenderSingleChatMedia { sender = strSenderId, number = strNumber, caption = strMessage, file = filefile };
-                        client.BaseAddress = new Uri("http://192.168.100.1:9001/send-media");
-                        var response = client.PostAsJsonAsync("", SenderSingleChatMedia).Result;
-                        if (response.IsSuccessStatusCode)
+                        if (response.StatusCode.ToString() == "422")
                         {
-                            fcn.UpdateStatusHeader(strTrxId);
-                            fcn.UpdateStatusMessage(strTrxId, strNumber, "1");
-                        }
-                        else
-                        {
-                            if (response.StatusCode.ToString() == "422")
-                            {
-                                fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
-                            }
+                            fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
                         }
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Terjadi kesalahan pada session devices')", true);
+                using (var client = new HttpClient())
+                {
+                    //string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + strMedia);
+                    string filefile = Server.MapPath("Media/" + strMedia);
+                    SenderSingleChatMedia SenderSingleChatMedia = new SenderSingleChatMedia { sender = strSenderId, number = strNumber, caption = strMessage, file = filefile };
+                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-media");
+                    var response = client.PostAsJsonAsync("", SenderSingleChatMedia).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        fcn.UpdateStatusHeader(strTrxId);
+                        fcn.UpdateStatusMessage(strTrxId, strNumber, "1");
+                    }
+                    else
+                    {
+                        if (response.StatusCode.ToString() == "422")
+                        {
+                            fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
+                        }
+                    }
+                }
             }
         }
 

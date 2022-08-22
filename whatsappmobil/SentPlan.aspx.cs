@@ -699,673 +699,706 @@ namespace whatsappmobil
 
         private void GenerateDataFromH1(string strOperator, string strValue, string strSumberData, string strBranch)
         {
-            #region SumberData
-            //SumberData
-            string strGatPlanSUMBERDATA = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SUMBER DATA'");
-            string strGetPlanTANGGALSTNK = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL STNK'");
-            string strGetPlanTANGGALPEMBELIAN = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL PEMBELIAN'");
-            string strSenderId = plan.GetPlanFilter("select session_devices from trx_whatsapp_plan where id_plan = '"+hiddenPlanId.Value+"'");
-            #endregion
-            #region H1
-            string vleSUMBERDATA = strGatPlanSUMBERDATA.Split('#')[1];
-            //TanggalSTNK
-            string oprTANGGALSTNK = "";
-            string vleTANGGALSTNK = "";
-            string QrWhere = "";
-            string QrSTNK = "";
-            if (strGetPlanTANGGALSTNK != "=##" && strGetPlanTANGGALSTNK != "<##" && strGetPlanTANGGALSTNK != "")
-            {
-                oprTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[0];
-                vleTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[1];
-                QrWhere = @"where";
-                QrSTNK = @"and trunc(sysdate) " + oprTANGGALSTNK + " trunc(STNK_RECEIVE_DATE) + " + vleTANGGALSTNK + "";
-            }
-            //TanggalPembelian
-            string oprTANGGALPEMBELIAN = "";
-            string vleTANGGALPEMBELIAN = "";
-            string QrPEMBELIAN = "";
-            if (strGetPlanTANGGALPEMBELIAN != "=##" && strGetPlanTANGGALPEMBELIAN != "<##" && strGetPlanTANGGALPEMBELIAN != "")
-            {
-                oprTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[0];
-                vleTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[1];
-                QrPEMBELIAN = @"and trunc(sysdate) " + oprTANGGALPEMBELIAN + " trunc(do_date) + " + vleTANGGALPEMBELIAN + "";
-            }
-            #endregion
-
             OracleConnection oracleConnection = new OracleConnection(ConnectionStringH2);
             oracleConnection.Open();
 
-            #region List
-            List<string> SenderId = new List<string>();
-            List<string> Full_name = new List<string>();
-            List<string> Cust_name = new List<string>();
-            List<string> Number = new List<string>();
-            List<string> Branch_id = new List<string>();
-            List<string> Tanggal_Beli = new List<string>();
-            List<string> Type_Kendaraan = new List<string>();
-            List<string> Tanggal_STNK = new List<string>();
-            List<string> Plat_No = new List<string>();
-            List<string> Branch_Name = new List<string>();
-            List<string> Birth_Date = new List<string>();
-            List<string> Branch_Address = new List<string>();
-            List<string> Branch_Phone = new List<string>();
-            List<string> Doc_Ref = new List<string>();
-            string date = DateTime.Now.ToString("dd/MM/yyyy");
-            string strUser = Convert.ToString(Session["UserID"]);
-            #endregion
-
-            string trxid = "Generate.H1." + DateTime.Now.ToString("ddMMyyyyhhmmss");
-            string strGetData = "";
-            OracleCommand oracleCommand = null;
-            strGetData = @"SELECT distinct ccmsmobil.vi_datapenjualanh1.CUST_NAME, REPLACE(REPLACE(REPLACE(REPLACE(ccmsmobil.vi_datapenjualanh1.PHONE_NO1, ' ', ''), '-', ''), '+62', '0'), '+62 ', '0') AS PHONE_NO1, ccmsmobil.vi_datapenjualanh1.BRANCH_ID, do_date, product_name, stnk_receive_date, police_no, cabang, BIRTH_DATE, bintangdbamobil.mst_branch.ADDRESS1, bintangdbamobil.mst_branch.phone_no1 as branch_phone, ccmsmobil.vi_datapenjualanh1.do_id, ccmsmobil.vi_datapenjualanh1.nickname FROM ccmsmobil.vi_datapenjualanh1 INNER JOIN ccmsmobil.vi_selectcustomerh1 ON ccmsmobil.vi_datapenjualanh1.cust_id = ccmsmobil.vi_selectcustomerh1.cust_id INNER JOIN bintangdbamobil.mst_branch on ccmsmobil.vi_datapenjualanh1.branch_id = bintangdbamobil.mst_branch.branch_id where ccmsmobil.vi_datapenjualanh1.branch_id in(" + strBranch + ")" + QrSTNK + "" + QrPEMBELIAN + "";
-            oracleCommand = new OracleCommand(strGetData, oracleConnection);
-            OracleDataReader dataReader = oracleCommand.ExecuteReader();
-            if (dataReader.HasRows)
+            try
             {
-                while (dataReader.Read())
+                #region SumberData
+                //SumberData
+                string strGatPlanSUMBERDATA = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SUMBER DATA'");
+                string strGetPlanTANGGALSTNK = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL STNK'");
+                string strGetPlanTANGGALPEMBELIAN = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL PEMBELIAN'");
+                string strSenderId = plan.GetPlanFilter("select session_devices from trx_whatsapp_plan where id_plan = '" + hiddenPlanId.Value + "'");
+                #endregion
+                #region H1
+                string vleSUMBERDATA = strGatPlanSUMBERDATA.Split('#')[1];
+                //TanggalSTNK
+                string oprTANGGALSTNK = "";
+                string vleTANGGALSTNK = "";
+                string QrWhere = "";
+                string QrSTNK = "";
+                if (strGetPlanTANGGALSTNK != "=##" && strGetPlanTANGGALSTNK != "<##" && strGetPlanTANGGALSTNK != "")
                 {
-                    if (!dataReader.IsDBNull(0))
-                    {
-                        Full_name.Add(dataReader.GetString(0));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(12))
-                    {
-                        Cust_name.Add(dataReader.GetString(12));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(1))
-                    {
-                        Number.Add(dataReader.GetString(1));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(2))
-                    {
-                        SenderId.Add(dataReader.GetString(2));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(3))
-                    {
-                        Tanggal_Beli.Add(dataReader.GetString(3));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(4))
-                    {
-                        Type_Kendaraan.Add(dataReader.GetString(4));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(5))
-                    {
-                        Tanggal_STNK.Add(dataReader.GetString(5));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(6))
-                    {
-                        Plat_No.Add(dataReader.GetString(6));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(7))
-                    {
-                        Branch_Name.Add(dataReader.GetString(7));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(8))
-                    {
-                        Birth_Date.Add(dataReader.GetString(8));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(9))
-                    {
-                        Branch_Address.Add(dataReader.GetString(9));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(10))
-                    {
-                        Branch_Phone.Add(dataReader.GetString(10));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(11))
-                    {
-                        Doc_Ref.Add(dataReader.GetString(11));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
+                    oprTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[0];
+                    vleTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[1];
+                    QrWhere = @"where";
+                    QrSTNK = @"and trunc(sysdate) " + oprTANGGALSTNK + " trunc(STNK_RECEIVE_DATE) + " + vleTANGGALSTNK + "";
                 }
-                dataReader.Close();
-                for (int i = 0; i < Number.Count; i++)
+                //TanggalPembelian
+                string oprTANGGALPEMBELIAN = "";
+                string vleTANGGALPEMBELIAN = "";
+                string QrPEMBELIAN = "";
+                if (strGetPlanTANGGALPEMBELIAN != "=##" && strGetPlanTANGGALPEMBELIAN != "<##" && strGetPlanTANGGALPEMBELIAN != "")
                 {
-                    try
+                    oprTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[0];
+                    vleTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[1];
+                    QrPEMBELIAN = @"and trunc(sysdate) " + oprTANGGALPEMBELIAN + " trunc(do_date) + " + vleTANGGALPEMBELIAN + "";
+                }
+                #endregion
+                #region List
+                List<string> SenderId = new List<string>();
+                List<string> Full_name = new List<string>();
+                List<string> Cust_name = new List<string>();
+                List<string> Number = new List<string>();
+                List<string> Branch_id = new List<string>();
+                List<string> Tanggal_Beli = new List<string>();
+                List<string> Type_Kendaraan = new List<string>();
+                List<string> Tanggal_STNK = new List<string>();
+                List<string> Plat_No = new List<string>();
+                List<string> Branch_Name = new List<string>();
+                List<string> Birth_Date = new List<string>();
+                List<string> Branch_Address = new List<string>();
+                List<string> Branch_Phone = new List<string>();
+                List<string> Doc_Ref = new List<string>();
+                string date = DateTime.Now.ToString("dd/MM/yyyy");
+                string strUser = Convert.ToString(Session["UserID"]);
+                #endregion
+
+                string trxid = "Generate.H1." + DateTime.Now.ToString("ddMMyyyyhhmmss");
+                string strGetData = "";
+                OracleCommand oracleCommand = null;
+                strGetData = @"SELECT distinct ccmsmobil.vi_datapenjualanh1.CUST_NAME, REPLACE(REPLACE(REPLACE(REPLACE(ccmsmobil.vi_datapenjualanh1.PHONE_NO1, ' ', ''), '-', ''), '+62', '0'), '+62 ', '0') AS PHONE_NO1, ccmsmobil.vi_datapenjualanh1.BRANCH_ID, do_date, product_name, stnk_receive_date, police_no, cabang, BIRTH_DATE, bintangdbamobil.mst_branch.ADDRESS1, bintangdbamobil.mst_branch.phone_no1 as branch_phone, ccmsmobil.vi_datapenjualanh1.do_id, ccmsmobil.vi_datapenjualanh1.nickname FROM ccmsmobil.vi_datapenjualanh1 INNER JOIN ccmsmobil.vi_selectcustomerh1 ON ccmsmobil.vi_datapenjualanh1.cust_id = ccmsmobil.vi_selectcustomerh1.cust_id INNER JOIN bintangdbamobil.mst_branch on ccmsmobil.vi_datapenjualanh1.branch_id = bintangdbamobil.mst_branch.branch_id where ccmsmobil.vi_datapenjualanh1.branch_id in(" + strBranch + ")" + QrSTNK + "" + QrPEMBELIAN + "";
+                oracleCommand = new OracleCommand(strGetData, oracleConnection);
+                OracleDataReader dataReader = oracleCommand.ExecuteReader();
+                if (dataReader.HasRows)
+                {
+                    while (dataReader.Read())
                     {
-                        string strMessageReplace = "";
-                        Regex findValue = new Regex(@"{name}|{tgl_beli}|{type_kendaraan}|{tgl_stnk}|{plat_no}|{last_service}|{birth_date}|{branch_name}|{branch_address}|{branch_phone}|{full_name}");
-                        Match findMatch = findValue.Match(lblMessageContentView.Text);
-                        if (findMatch.Success)
+                        if (!dataReader.IsDBNull(0))
                         {
-                            strMessageReplace = lblMessageContentView.Text.Replace("{name}", Cust_name[i]).Replace("{tgl_beli}", Tanggal_Beli[i]).Replace("{type_kendaraan}", Type_Kendaraan[i]).Replace("{tgl_stnk}", Tanggal_STNK[i]).Replace("{plat_no}", Plat_No[i]).Replace("{last_service}", "").Replace("{birth_date}", Birth_Date[i]).Replace("{branch_name}", Branch_Name[i]).Replace("{branch_address}", Branch_Address[i]).Replace("{branch_phone}", Branch_Phone[i]).Replace("{full_name}", Full_name[i]);
+                            Full_name.Add(dataReader.GetString(0));
                         }
                         else
                         {
-                            strMessageReplace = lblMessageContentView.Text;
+                            Console.WriteLine("No rows found");
                         }
-                        string CheckNumber = plan.GetPlanFilter("select wa_number from trx_whatsapp_message where trxid = '" + hiddenPlanId.Value + "' and wa_number = '" + Number[i] + "'");
-                        if(CheckNumber != "")
+                        if (!dataReader.IsDBNull(12))
                         {
-
+                            Cust_name.Add(dataReader.GetString(12));
                         }
                         else
                         {
-                            plan.InsertGeneratePlan(strSenderId.Split('#')[0], date, strSumberData, lblViewPlan.Text, Number[i], strMessageReplace, hiddenPlanId.Value, Doc_Ref[i]);
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(1))
+                        {
+                            Number.Add(dataReader.GetString(1));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(2))
+                        {
+                            SenderId.Add(dataReader.GetString(2));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(3))
+                        {
+                            Tanggal_Beli.Add(dataReader.GetString(3));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(4))
+                        {
+                            Type_Kendaraan.Add(dataReader.GetString(4));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(5))
+                        {
+                            Tanggal_STNK.Add(dataReader.GetString(5));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(6))
+                        {
+                            Plat_No.Add(dataReader.GetString(6));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(7))
+                        {
+                            Branch_Name.Add(dataReader.GetString(7));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(8))
+                        {
+                            Birth_Date.Add(dataReader.GetString(8));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(9))
+                        {
+                            Branch_Address.Add(dataReader.GetString(9));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(10))
+                        {
+                            Branch_Phone.Add(dataReader.GetString(10));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(11))
+                        {
+                            Doc_Ref.Add(dataReader.GetString(11));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
                         }
                     }
-                    catch (Exception ex)
+                    dataReader.Close();
+                    for (int i = 0; i < Number.Count; i++)
                     {
+                        try
+                        {
+                            string strMessageReplace = "";
+                            Regex findValue = new Regex(@"{name}|{tgl_beli}|{type_kendaraan}|{tgl_stnk}|{plat_no}|{last_service}|{birth_date}|{branch_name}|{branch_address}|{branch_phone}|{full_name}");
+                            Match findMatch = findValue.Match(lblMessageContentView.Text);
+                            if (findMatch.Success)
+                            {
+                                strMessageReplace = lblMessageContentView.Text.Replace("{name}", Cust_name[i]).Replace("{tgl_beli}", Tanggal_Beli[i]).Replace("{type_kendaraan}", Type_Kendaraan[i]).Replace("{tgl_stnk}", Tanggal_STNK[i]).Replace("{plat_no}", Plat_No[i]).Replace("{last_service}", "").Replace("{birth_date}", Birth_Date[i]).Replace("{branch_name}", Branch_Name[i]).Replace("{branch_address}", Branch_Address[i]).Replace("{branch_phone}", Branch_Phone[i]).Replace("{full_name}", Full_name[i]);
+                            }
+                            else
+                            {
+                                strMessageReplace = lblMessageContentView.Text;
+                            }
+                            string CheckNumber = plan.GetPlanFilter("select wa_number from trx_whatsapp_message where trxid = '" + hiddenPlanId.Value + "' and wa_number = '" + Number[i] + "'");
+                            if (CheckNumber != "")
+                            {
+
+                            }
+                            else
+                            {
+                                plan.InsertGeneratePlan(strSenderId.Split('#')[0], date, strSumberData, lblViewPlan.Text, Number[i], strMessageReplace, hiddenPlanId.Value, Doc_Ref[i]);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
 
                     }
-
                 }
+                //Add HeaderText
+                plan.InsertTrxMessageHeader(trxid, lblViewPlan.Text, date, "", HiddenPlanMedia.Value, HiddenPlanIsMedia.Value, HiddenScheduledMessage.Value, HiddenScheduledMessageTime.Value, hiddenPlanId.Value, strUser);
             }
-            //Add HeaderText
-            plan.InsertTrxMessageHeader(trxid, lblViewPlan.Text, date, "", HiddenPlanMedia.Value, HiddenPlanIsMedia.Value, HiddenScheduledMessage.Value, HiddenScheduledMessageTime.Value, hiddenPlanId.Value, strUser);
+            catch(Exception ex)
+            {
+
+            }
+            finally
+            {
+                oracleConnection.Close();
+            }
         }
         private void GenerateDataFromH2(string strOperator, string strValue, string strSumberData, string strBranch)
         {
-            #region SumberData
-            //SumberData
-            string strGetPlanSERVICETERAKHIR = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SERVICE TERAKHIR'");
-            string strGetPlanJUMLAHSERVICE = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE'");
-            string strGetPlanJUMLAHSERVICE2 = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE 2'");
-            string strGetPlanBELUMKPB = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'BELUM KPB'");
-            string strSenderId = plan.GetPlanFilter("select session_devices from trx_whatsapp_plan where id_plan = '" + hiddenPlanId.Value + "'");
-            #endregion
-            #region H2
-            //Service Terakhir
-            string oprSERVICETERAKHIR = "";
-            string vleSERVICETERAKHIR = "";
-            string QrSERVICE = "";
-            if (strGetPlanSERVICETERAKHIR != "")
-            {
-                oprSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[0];
-                vleSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[1];
-                QrSERVICE = @"and trunc(sysdate) " + oprSERVICETERAKHIR + " trunc(vo_last_order) + " + vleSERVICETERAKHIR + "";
-            }
-            //Jumlah Service
-            string oprJUMLAHSERVICE = "";
-            string vleJUMLAHSERVICE = "";
-            string QrJUMLAHSERVICE = "";
-            if (strGetPlanJUMLAHSERVICE != "")
-            {
-                oprJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[0];
-                vleJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[1];
-                QrJUMLAHSERVICE = @"and totalservice " + oprJUMLAHSERVICE + " " + vleJUMLAHSERVICE + "";
-            }
-            #endregion
             OracleConnection oracleConnection = new OracleConnection(ConnectionStringH2);
             oracleConnection.Open();
-
-            #region List
-            List<string> SenderId = new List<string>();
-            List<string> Full_name = new List<string>();
-            List<string> Cust_name = new List<string>();
-            List<string> Number = new List<string>();
-            List<string> Branch_id = new List<string>();
-            List<string> Tanggal_Beli = new List<string>();
-            List<string> Type_Kendaraan = new List<string>();
-            List<string> Tanggal_STNK = new List<string>();
-            List<string> Plat_No = new List<string>();
-            List<string> Branch_Name = new List<string>();
-            List<string> Birth_Date = new List<string>();
-            List<string> Branch_Address = new List<string>();
-            List<string> Branch_Phone = new List<string>();
-            List<string> Last_Service = new List<string>();
-            List<string> Doc_Ref = new List<string>();
-            string date = DateTime.Now.ToString("dd/MM/yyyy");
-            string strUser = Convert.ToString(Session["UserID"]);
-            #endregion
-
-            string trxid = "Generate.H2." + DateTime.Now.ToString("ddMMyyyyhhmmss");
-            string strGetData = "";
-            OracleCommand oracleCommand = null;
-            strGetData = @"SELECT VO_NAME, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(VO_PHONE_1, ':62', '0'), ':0','0'), ' ', ''), '-', ''), '+62', '0'), '+62 ', '0'), '62', '0'),';','0') AS VO_PHONE_1, VO_BRANCH_ID, VM_DESCRIPTION, WO_REGISTRATION_NUMBER, VO_LAST_ORDER, VO_BIRTHDAY, BRANCH_NAME, bintangdbamobil.MST_BRANCH.ADDRESS1, bintangdbamobil.MST_BRANCH.PHONE_NO1 AS BRANCH_PHONE, ccmsmobil.VI_WORKORDERH2.WO_ID, nickname FROM ccmsmobil.VI_SELECTCUSTOMERH2 INNER JOIN ccmsmobil.VI_WORKORDERH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_WORKORDERH2.WO_OWNER_ID INNER JOIN bintangdbamobil.MST_BRANCH ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_BRANCH_ID = bintangdbamobil.MST_BRANCH.BRANCH_ID INNER JOIN ccmsmobil.VI_SELECTVEHICLEH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_OWNER_ID INNER JOIN ccmsmobil.MST_VEHICLEMODEL ON ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_MODEL_CODE = ccmsmobil.MST_VEHICLEMODEL.VM_MODEL_CODE where vo_branch_id in(" + strBranch + ")" + QrSERVICE + "" + QrJUMLAHSERVICE + "";
-            oracleCommand = new OracleCommand(strGetData, oracleConnection);
-            OracleDataReader dataReader = oracleCommand.ExecuteReader();
-            if (dataReader.HasRows)
+            try
             {
-                while (dataReader.Read())
+                #region SumberData
+                //SumberData
+                string strGetPlanSERVICETERAKHIR = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SERVICE TERAKHIR'");
+                string strGetPlanJUMLAHSERVICE = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE'");
+                string strGetPlanJUMLAHSERVICE2 = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE 2'");
+                string strGetPlanBELUMKPB = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'BELUM KPB'");
+                string strSenderId = plan.GetPlanFilter("select session_devices from trx_whatsapp_plan where id_plan = '" + hiddenPlanId.Value + "'");
+                #endregion
+                #region H2
+                //Service Terakhir
+                string oprSERVICETERAKHIR = "";
+                string vleSERVICETERAKHIR = "";
+                string QrSERVICE = "";
+                if (strGetPlanSERVICETERAKHIR != "")
                 {
-                    if (!dataReader.IsDBNull(0))
-                    {
-                        Full_name.Add(dataReader.GetString(0));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(11))
-                    {
-                        Cust_name.Add(dataReader.GetString(11));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(1))
-                    {
-                        Number.Add(dataReader.GetString(1));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(2))
-                    {
-                        SenderId.Add(dataReader.GetString(2));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(3))
-                    {
-                        Type_Kendaraan.Add(dataReader.GetString(3));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(4))
-                    {
-                        Plat_No.Add(dataReader.GetString(4));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(5))
-                    {
-                        Last_Service.Add(dataReader.GetString(5));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(6))
-                    {
-                        Birth_Date.Add(dataReader.GetString(6));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(7))
-                    {
-                        Branch_Name.Add(dataReader.GetString(7));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(8))
-                    {
-                        Branch_Address.Add(dataReader.GetString(8));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(9))
-                    {
-                        Branch_Phone.Add(dataReader.GetString(9));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(10))
-                    {
-                        Doc_Ref.Add(dataReader.GetString(10));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
+                    oprSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[0];
+                    vleSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[1];
+                    QrSERVICE = @"and trunc(sysdate) " + oprSERVICETERAKHIR + " trunc(vo_last_order) + " + vleSERVICETERAKHIR + "";
                 }
-                dataReader.Close();
-                for (int i = 0; i < Number.Count; i++)
+                //Jumlah Service
+                string oprJUMLAHSERVICE = "";
+                string vleJUMLAHSERVICE = "";
+                string QrJUMLAHSERVICE = "";
+                if (strGetPlanJUMLAHSERVICE != "")
                 {
-                    try
+                    oprJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[0];
+                    vleJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[1];
+                    QrJUMLAHSERVICE = @"and totalservice " + oprJUMLAHSERVICE + " " + vleJUMLAHSERVICE + "";
+                }
+                #endregion
+
+                #region List
+                List<string> SenderId = new List<string>();
+                List<string> Full_name = new List<string>();
+                List<string> Cust_name = new List<string>();
+                List<string> Number = new List<string>();
+                List<string> Branch_id = new List<string>();
+                List<string> Tanggal_Beli = new List<string>();
+                List<string> Type_Kendaraan = new List<string>();
+                List<string> Tanggal_STNK = new List<string>();
+                List<string> Plat_No = new List<string>();
+                List<string> Branch_Name = new List<string>();
+                List<string> Birth_Date = new List<string>();
+                List<string> Branch_Address = new List<string>();
+                List<string> Branch_Phone = new List<string>();
+                List<string> Last_Service = new List<string>();
+                List<string> Doc_Ref = new List<string>();
+                string date = DateTime.Now.ToString("dd/MM/yyyy");
+                string strUser = Convert.ToString(Session["UserID"]);
+                #endregion
+
+                string trxid = "Generate.H2." + DateTime.Now.ToString("ddMMyyyyhhmmss");
+                string strGetData = "";
+                OracleCommand oracleCommand = null;
+                strGetData = @"SELECT VO_NAME, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(VO_PHONE_1, ':62', '0'), ':0','0'), ' ', ''), '-', ''), '+62', '0'), '+62 ', '0'), '62', '0'),';','0') AS VO_PHONE_1, VO_BRANCH_ID, VM_DESCRIPTION, WO_REGISTRATION_NUMBER, VO_LAST_ORDER, VO_BIRTHDAY, BRANCH_NAME, bintangdbamobil.MST_BRANCH.ADDRESS1, bintangdbamobil.MST_BRANCH.PHONE_NO1 AS BRANCH_PHONE, ccmsmobil.VI_WORKORDERH2.WO_ID, nickname FROM ccmsmobil.VI_SELECTCUSTOMERH2 INNER JOIN ccmsmobil.VI_WORKORDERH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_WORKORDERH2.WO_OWNER_ID INNER JOIN bintangdbamobil.MST_BRANCH ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_BRANCH_ID = bintangdbamobil.MST_BRANCH.BRANCH_ID INNER JOIN ccmsmobil.VI_SELECTVEHICLEH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_OWNER_ID INNER JOIN ccmsmobil.MST_VEHICLEMODEL ON ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_MODEL_CODE = ccmsmobil.MST_VEHICLEMODEL.VM_MODEL_CODE where vo_branch_id in(" + strBranch + ")" + QrSERVICE + "" + QrJUMLAHSERVICE + "";
+                oracleCommand = new OracleCommand(strGetData, oracleConnection);
+                OracleDataReader dataReader = oracleCommand.ExecuteReader();
+                if (dataReader.HasRows)
+                {
+                    while (dataReader.Read())
                     {
-                        string strMessageReplace = "";
-                        Regex findValue = new Regex(@"{name}|{tgl_beli}|{type_kendaraan}|{tgl_stnk}|{plat_no}|{last_service}|{birth_date}|{branch_name}|{branch_address}|{branch_phone}|{full_name}");
-                        Match findMatch = findValue.Match(lblMessageContentView.Text);
-                        if (findMatch.Success)
+                        if (!dataReader.IsDBNull(0))
                         {
-                            strMessageReplace = lblMessageContentView.Text.Replace("{name}", Cust_name[i]).Replace("{tgl_beli}", "").Replace("{type_kendaraan}", Type_Kendaraan[i]).Replace("{tgl_stnk}", "").Replace("{plat_no}", Plat_No[i]).Replace("{last_service}", Last_Service[i]).Replace("{birth_date}", Birth_Date[i]).Replace("{branch_name}", Branch_Name[i]).Replace("{branch_address}", Branch_Address[i]).Replace("{branch_phone}", Branch_Phone[i]).Replace("{full_name}", Full_name[i]);
+                            Full_name.Add(dataReader.GetString(0));
                         }
                         else
                         {
-                            strMessageReplace = lblMessageContentView.Text;
+                            Console.WriteLine("No rows found");
                         }
-                        string CheckNumber = plan.GetPlanFilter("select wa_number from trx_whatsapp_message where trxid = '" + hiddenPlanId.Value + "' and wa_number = '" + Number[i] + "'");
-                        if (CheckNumber != "")
+                        if (!dataReader.IsDBNull(11))
                         {
-
+                            Cust_name.Add(dataReader.GetString(11));
                         }
                         else
                         {
-                            plan.InsertGeneratePlan(strSenderId.Split('#')[0], date, strSumberData, lblViewPlan.Text, Number[i], strMessageReplace, hiddenPlanId.Value, Doc_Ref[i]);
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(1))
+                        {
+                            Number.Add(dataReader.GetString(1));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(2))
+                        {
+                            SenderId.Add(dataReader.GetString(2));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(3))
+                        {
+                            Type_Kendaraan.Add(dataReader.GetString(3));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(4))
+                        {
+                            Plat_No.Add(dataReader.GetString(4));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(5))
+                        {
+                            Last_Service.Add(dataReader.GetString(5));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(6))
+                        {
+                            Birth_Date.Add(dataReader.GetString(6));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(7))
+                        {
+                            Branch_Name.Add(dataReader.GetString(7));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(8))
+                        {
+                            Branch_Address.Add(dataReader.GetString(8));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(9))
+                        {
+                            Branch_Phone.Add(dataReader.GetString(9));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(10))
+                        {
+                            Doc_Ref.Add(dataReader.GetString(10));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
                         }
                     }
-                    catch (Exception ex)
+                    dataReader.Close();
+                    for (int i = 0; i < Number.Count; i++)
                     {
+                        try
+                        {
+                            string strMessageReplace = "";
+                            Regex findValue = new Regex(@"{name}|{tgl_beli}|{type_kendaraan}|{tgl_stnk}|{plat_no}|{last_service}|{birth_date}|{branch_name}|{branch_address}|{branch_phone}|{full_name}");
+                            Match findMatch = findValue.Match(lblMessageContentView.Text);
+                            if (findMatch.Success)
+                            {
+                                strMessageReplace = lblMessageContentView.Text.Replace("{name}", Cust_name[i]).Replace("{tgl_beli}", "").Replace("{type_kendaraan}", Type_Kendaraan[i]).Replace("{tgl_stnk}", "").Replace("{plat_no}", Plat_No[i]).Replace("{last_service}", Last_Service[i]).Replace("{birth_date}", Birth_Date[i]).Replace("{branch_name}", Branch_Name[i]).Replace("{branch_address}", Branch_Address[i]).Replace("{branch_phone}", Branch_Phone[i]).Replace("{full_name}", Full_name[i]);
+                            }
+                            else
+                            {
+                                strMessageReplace = lblMessageContentView.Text;
+                            }
+                            string CheckNumber = plan.GetPlanFilter("select wa_number from trx_whatsapp_message where trxid = '" + hiddenPlanId.Value + "' and wa_number = '" + Number[i] + "'");
+                            if (CheckNumber != "")
+                            {
 
+                            }
+                            else
+                            {
+                                plan.InsertGeneratePlan(strSenderId.Split('#')[0], date, strSumberData, lblViewPlan.Text, Number[i], strMessageReplace, hiddenPlanId.Value, Doc_Ref[i]);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
                     }
                 }
+                //Add HeaderText
+                plan.InsertTrxMessageHeader(trxid, lblViewPlan.Text, date, "", HiddenPlanMedia.Value, HiddenPlanIsMedia.Value, HiddenScheduledMessage.Value, HiddenScheduledMessageTime.Value, hiddenPlanId.Value, strUser);
             }
-            //Add HeaderText
-            plan.InsertTrxMessageHeader(trxid, lblViewPlan.Text, date, "", HiddenPlanMedia.Value, HiddenPlanIsMedia.Value, HiddenScheduledMessage.Value, HiddenScheduledMessageTime.Value, hiddenPlanId.Value, strUser);
+            catch(Exception ex)
+            {
+
+            }
+            finally
+            {
+                oracleConnection.Close();
+            }
         }
         private void GenerateDataFromAll(string strOperator, string strValue, string strSumberData, string strBranch)
         {
-            #region SumberData
-            //SumberData
-            string strGatPlanSUMBERDATA = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SUMBER DATA'");
-            string strGetPlanTANGGALSTNK = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL STNK'");
-            string strGetPlanTANGGALPEMBELIAN = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL PEMBELIAN'");
-            string strGetPlanSERVICETERAKHIR = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SERVICE TERAKHIR'");
-            string strGetPlanJUMLAHSERVICE = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE'");
-            string strGetPlanJUMLAHSERVICE2 = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE 2'");
-            string strGetPlanBELUMKPB = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'BELUM KPB'");
-            #endregion
-            #region H1
-            string vleSUMBERDATA = strGatPlanSUMBERDATA.Split('#')[1];
-            //TanggalSTNK
-            string oprTANGGALSTNK = "";
-            string vleTANGGALSTNK = "";
-            string QrWhere = "";
-            string QrSTNK = "";
-            if (strGetPlanTANGGALSTNK != "")
-            {
-                oprTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[0];
-                vleTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[1];
-                QrWhere = @"where";
-                QrSTNK = @"and trunc(sysdate) " + oprTANGGALSTNK + " trunc(STNK_RECEIVE_DATE) + " + vleTANGGALSTNK + "";
-            }
-            //TanggalPembelian
-            string oprTANGGALPEMBELIAN = "";
-            string vleTANGGALPEMBELIAN = "";
-            string QrPEMBELIAN = "";
-            if (strGetPlanTANGGALPEMBELIAN != "")
-            {
-                oprTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[0];
-                vleTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[1];
-                QrPEMBELIAN = @"and trunc(sysdate) " + oprTANGGALPEMBELIAN + " trunc(do_date) + " + vleTANGGALPEMBELIAN + "";
-            }
-            #endregion
-            #region H2
-            //Service Terakhir
-            string oprSERVICETERAKHIR = "";
-            string vleSERVICETERAKHIR = "";
-            string QrSERVICE = "";
-            if (strGetPlanSERVICETERAKHIR != "")
-            {
-                oprSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[0];
-                vleSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[1];
-                QrSERVICE = @"and trunc(sysdate) " + oprSERVICETERAKHIR + " trunc(vo_last_order) + " + vleSERVICETERAKHIR + "";
-            }
-            //Jumlah Service
-            string oprJUMLAHSERVICE = "";
-            string vleJUMLAHSERVICE = "";
-            string QrJUMLAHSERVICE = "";
-            if (strGetPlanJUMLAHSERVICE != "")
-            {
-                oprJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[0];
-                vleJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[1];
-                QrJUMLAHSERVICE = @"and totalservice " + oprJUMLAHSERVICE + " " + vleJUMLAHSERVICE + "";
-            }
-
-
-            #endregion
             OracleConnection oracleConnection = new OracleConnection(ConnectionStringH2);
             oracleConnection.Open();
 
-            #region List
-            List<string> SenderId = new List<string>();
-            List<string> Full_name = new List<string>();
-            List<string> Cust_name = new List<string>();
-            List<string> Number = new List<string>();
-            List<string> Branch_id = new List<string>();
-            List<string> Tanggal_Beli = new List<string>();
-            List<string> Type_Kendaraan = new List<string>();
-            List<string> Tanggal_STNK = new List<string>();
-            List<string> Plat_No = new List<string>();
-            List<string> Branch_Name = new List<string>();
-            List<string> Birth_Date = new List<string>();
-            List<string> Branch_Address = new List<string>();
-            List<string> Branch_Phone = new List<string>();
-            List<string> Last_Service = new List<string>();
-            List<string> Doc_Ref = new List<string>();
-            string date = DateTime.Now.ToString("dd/MM/yyyy");
-            string strUser = Convert.ToString(Session["UserID"]);
-            #endregion
-
-            string trxid = "Generate.ALL." + DateTime.Now.ToString("ddMMyyyyhhmmss");
-            string strGetData = "";
-            OracleCommand oracleCommand = null;
-            #region DataQuery
-            strGetData = "SELECT distinct ccmsmobil.vi_datapenjualanh1.CUST_NAME, " +
-                "REPLACE(REPLACE(REPLACE(REPLACE(ccmsmobil.vi_datapenjualanh1.PHONE_NO1, ' ', ''), '-', ''), '+62', '0'), '+62 ', '0') AS PHONE_NO1, " +
-                "ccmsmobil.vi_datapenjualanh1.BRANCH_ID, product_name, police_no, BIRTH_DATE, cabang, bintangdbamobil.MST_BRANCH.ADDRESS1, " +
-                "bintangdbamobil.MST_BRANCH.phone_no1 as branch_phone, to_char(do_date, 'dd/mm/yyyy') do_date, to_char(stnk_receive_date, 'dd/mm/yyyy') as stnk_receive_date, " +
-                "nvl(to_char('', 'dd/mm/yyyy'), '') as VO_LAST_ORDER, ccmsmobil.vi_datapenjualanh1.do_id as DOC_REF, ccmsmobil.vi_datapenjualanh1.nickname " +
-                "FROM ccmsmobil.vi_datapenjualanh1 " +
-                "INNER JOIN ccmsmobil.vi_selectcustomerh1 ON ccmsmobil.vi_datapenjualanh1.cust_id = ccmsmobil.vi_selectcustomerh1.cust_id " +
-                "INNER JOIN bintangdbamobil.MST_BRANCH on ccmsmobil.vi_datapenjualanh1.branch_id = bintangdbamobil.MST_BRANCH.branch_id " +
-                "WHERE ccmsmobil.vi_datapenjualanh1.branch_id in(" + strBranch + ")" + QrSTNK + "" + QrPEMBELIAN + "" +
-                "UNION " +
-                "SELECT distinct VO_NAME, " +
-                "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(VO_PHONE_1, ':62', '0'), ':0','0'), ' ', ''), '-', ''), '+62', '0'), '+62 ', '0'), '62', '0'),';','0') AS VO_PHONE_1, " +
-                "VO_BRANCH_ID, VM_DESCRIPTION, WO_REGISTRATION_NUMBER, to_char(VO_BIRTHDAY, 'dd/mm/yyyy') VO_BIRTHDAY, BRANCH_NAME, " +
-                "bintangdbamobil.MST_BRANCH.ADDRESS1, bintangdbamobil.MST_BRANCH.PHONE_NO1 AS BRANCH_PHONE, nvl(to_char('', 'dd/mm/yyyy'), '') as do_date, " +
-                "nvl(to_char('', 'dd/mm/yyyy'), '') as stnk_receive_date, to_char(VO_LAST_ORDER, 'dd/mm/yyyy') as VO_LAST_ORDER, " +
-                "ccmsmobil.VI_WORKORDERH2.WO_ID as DOC_REF, nickname " +
-                "FROM ccmsmobil.VI_SELECTCUSTOMERH2 " +
-                "INNER JOIN ccmsmobil.VI_WORKORDERH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_WORKORDERH2.WO_OWNER_ID " +
-                "INNER JOIN bintangdbamobil.MST_BRANCH ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_BRANCH_ID = bintangdbamobil.MST_BRANCH.BRANCH_ID " +
-                "INNER JOIN ccmsmobil.VI_SELECTVEHICLEH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_OWNER_ID " +
-                "INNER JOIN ccmsmobil.MST_VEHICLEMODEL ON ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_MODEL_CODE = ccmsmobil.MST_VEHICLEMODEL.VM_MODEL_CODE " +
-                "where vo_branch_id in(" + strBranch + ")" + QrSERVICE + "" + QrJUMLAHSERVICE + "";
-            #endregion
-            oracleCommand = new OracleCommand(strGetData, oracleConnection);
-            OracleDataReader dataReader = oracleCommand.ExecuteReader();
-            if (dataReader.HasRows)
+            try
             {
-                while (dataReader.Read())
+                #region SumberData
+                //SumberData
+                string strGatPlanSUMBERDATA = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SUMBER DATA'");
+                string strGetPlanTANGGALSTNK = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL STNK'");
+                string strGetPlanTANGGALPEMBELIAN = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'TANGGAL PEMBELIAN'");
+                string strGetPlanSERVICETERAKHIR = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'SERVICE TERAKHIR'");
+                string strGetPlanJUMLAHSERVICE = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE'");
+                string strGetPlanJUMLAHSERVICE2 = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'JUMLAH SERVICE 2'");
+                string strGetPlanBELUMKPB = plan.GetPlanFilter("select operator, isi from trx_whatsapp_plan_filter where id_plan = '" + hiddenPlanId.Value + "' and kunci = 'BELUM KPB'");
+                #endregion
+                #region H1
+                string vleSUMBERDATA = strGatPlanSUMBERDATA.Split('#')[1];
+                //TanggalSTNK
+                string oprTANGGALSTNK = "";
+                string vleTANGGALSTNK = "";
+                string QrWhere = "";
+                string QrSTNK = "";
+                if (strGetPlanTANGGALSTNK != "")
                 {
-                    if (!dataReader.IsDBNull(13))
-                    {
-                        Cust_name.Add(dataReader.GetString(13));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(1))
-                    {
-                        Number.Add(dataReader.GetString(1));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(2))
-                    {
-                        SenderId.Add(dataReader.GetString(2));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(3))
-                    {
-                        Type_Kendaraan.Add(dataReader.GetString(3));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(4))
-                    {
-                        Plat_No.Add(dataReader.GetString(4));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(5))
-                    {
-                        Birth_Date.Add(dataReader.GetString(5));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(6))
-                    {
-                        Branch_Name.Add(dataReader.GetString(6));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(7))
-                    {
-                        Branch_Address.Add(dataReader.GetString(7));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(8))
-                    {
-                        Branch_Phone.Add(dataReader.GetString(8));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(10))
-                    {
-                        Tanggal_STNK.Add(dataReader.GetString(10));
-                    }
-                    else
-                    {
-                        Console.WriteLine("");
-                    }
-                    if (!dataReader.IsDBNull(11))
-                    {
-                        Last_Service.Add(dataReader.GetString(11));
-                    }
-                    else
-                    {
-                        Console.WriteLine("No rows found");
-                    }
-                    if (!dataReader.IsDBNull(9))
-                    {
-                        Tanggal_Beli.Add(dataReader.GetString(9));
-                    }
-                    else
-                    {
-                        Console.WriteLine("");
-                    }
-                    if (!dataReader.IsDBNull(12))
-                    {
-                        Doc_Ref.Add(dataReader.GetString(12));
-                    }
-                    else
-                    {
-                        Console.WriteLine("");
-                    }
-                    if (!dataReader.IsDBNull(13))
-                    {
-                        Full_name.Add(dataReader.GetString(13));
-                    }
-                    else
-                    {
-                        Console.WriteLine("");
-                    }
+                    oprTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[0];
+                    vleTANGGALSTNK = strGetPlanTANGGALSTNK.Split('#')[1];
+                    QrWhere = @"where";
+                    QrSTNK = @"and trunc(sysdate) " + oprTANGGALSTNK + " trunc(STNK_RECEIVE_DATE) + " + vleTANGGALSTNK + "";
                 }
-                dataReader.Close();
-                for (int i = 0; i < Number.Count; i++)
+                //TanggalPembelian
+                string oprTANGGALPEMBELIAN = "";
+                string vleTANGGALPEMBELIAN = "";
+                string QrPEMBELIAN = "";
+                if (strGetPlanTANGGALPEMBELIAN != "")
                 {
-                    try
+                    oprTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[0];
+                    vleTANGGALPEMBELIAN = strGetPlanTANGGALPEMBELIAN.Split('#')[1];
+                    QrPEMBELIAN = @"and trunc(sysdate) " + oprTANGGALPEMBELIAN + " trunc(do_date) + " + vleTANGGALPEMBELIAN + "";
+                }
+                #endregion
+                #region H2
+                //Service Terakhir
+                string oprSERVICETERAKHIR = "";
+                string vleSERVICETERAKHIR = "";
+                string QrSERVICE = "";
+                if (strGetPlanSERVICETERAKHIR != "")
+                {
+                    oprSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[0];
+                    vleSERVICETERAKHIR = strGetPlanSERVICETERAKHIR.Split('#')[1];
+                    QrSERVICE = @"and trunc(sysdate) " + oprSERVICETERAKHIR + " trunc(vo_last_order) + " + vleSERVICETERAKHIR + "";
+                }
+                //Jumlah Service
+                string oprJUMLAHSERVICE = "";
+                string vleJUMLAHSERVICE = "";
+                string QrJUMLAHSERVICE = "";
+                if (strGetPlanJUMLAHSERVICE != "")
+                {
+                    oprJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[0];
+                    vleJUMLAHSERVICE = strGetPlanJUMLAHSERVICE.Split('#')[1];
+                    QrJUMLAHSERVICE = @"and totalservice " + oprJUMLAHSERVICE + " " + vleJUMLAHSERVICE + "";
+                }
+
+
+                #endregion
+
+                #region List
+                List<string> SenderId = new List<string>();
+                List<string> Full_name = new List<string>();
+                List<string> Cust_name = new List<string>();
+                List<string> Number = new List<string>();
+                List<string> Branch_id = new List<string>();
+                List<string> Tanggal_Beli = new List<string>();
+                List<string> Type_Kendaraan = new List<string>();
+                List<string> Tanggal_STNK = new List<string>();
+                List<string> Plat_No = new List<string>();
+                List<string> Branch_Name = new List<string>();
+                List<string> Birth_Date = new List<string>();
+                List<string> Branch_Address = new List<string>();
+                List<string> Branch_Phone = new List<string>();
+                List<string> Last_Service = new List<string>();
+                List<string> Doc_Ref = new List<string>();
+                string date = DateTime.Now.ToString("dd/MM/yyyy");
+                string strUser = Convert.ToString(Session["UserID"]);
+                #endregion
+
+                string trxid = "Generate.ALL." + DateTime.Now.ToString("ddMMyyyyhhmmss");
+                string strGetData = "";
+                OracleCommand oracleCommand = null;
+                #region DataQuery
+                strGetData = "SELECT distinct ccmsmobil.vi_datapenjualanh1.CUST_NAME, " +
+                    "REPLACE(REPLACE(REPLACE(REPLACE(ccmsmobil.vi_datapenjualanh1.PHONE_NO1, ' ', ''), '-', ''), '+62', '0'), '+62 ', '0') AS PHONE_NO1, " +
+                    "ccmsmobil.vi_datapenjualanh1.BRANCH_ID, product_name, police_no, BIRTH_DATE, cabang, bintangdbamobil.MST_BRANCH.ADDRESS1, " +
+                    "bintangdbamobil.MST_BRANCH.phone_no1 as branch_phone, to_char(do_date, 'dd/mm/yyyy') do_date, to_char(stnk_receive_date, 'dd/mm/yyyy') as stnk_receive_date, " +
+                    "nvl(to_char('', 'dd/mm/yyyy'), '') as VO_LAST_ORDER, ccmsmobil.vi_datapenjualanh1.do_id as DOC_REF, ccmsmobil.vi_datapenjualanh1.nickname " +
+                    "FROM ccmsmobil.vi_datapenjualanh1 " +
+                    "INNER JOIN ccmsmobil.vi_selectcustomerh1 ON ccmsmobil.vi_datapenjualanh1.cust_id = ccmsmobil.vi_selectcustomerh1.cust_id " +
+                    "INNER JOIN bintangdbamobil.MST_BRANCH on ccmsmobil.vi_datapenjualanh1.branch_id = bintangdbamobil.MST_BRANCH.branch_id " +
+                    "WHERE ccmsmobil.vi_datapenjualanh1.branch_id in(" + strBranch + ")" + QrSTNK + "" + QrPEMBELIAN + "" +
+                    "UNION " +
+                    "SELECT distinct VO_NAME, " +
+                    "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(VO_PHONE_1, ':62', '0'), ':0','0'), ' ', ''), '-', ''), '+62', '0'), '+62 ', '0'), '62', '0'),';','0') AS VO_PHONE_1, " +
+                    "VO_BRANCH_ID, VM_DESCRIPTION, WO_REGISTRATION_NUMBER, to_char(VO_BIRTHDAY, 'dd/mm/yyyy') VO_BIRTHDAY, BRANCH_NAME, " +
+                    "bintangdbamobil.MST_BRANCH.ADDRESS1, bintangdbamobil.MST_BRANCH.PHONE_NO1 AS BRANCH_PHONE, nvl(to_char('', 'dd/mm/yyyy'), '') as do_date, " +
+                    "nvl(to_char('', 'dd/mm/yyyy'), '') as stnk_receive_date, to_char(VO_LAST_ORDER, 'dd/mm/yyyy') as VO_LAST_ORDER, " +
+                    "ccmsmobil.VI_WORKORDERH2.WO_ID as DOC_REF, nickname " +
+                    "FROM ccmsmobil.VI_SELECTCUSTOMERH2 " +
+                    "INNER JOIN ccmsmobil.VI_WORKORDERH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_WORKORDERH2.WO_OWNER_ID " +
+                    "INNER JOIN bintangdbamobil.MST_BRANCH ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_BRANCH_ID = bintangdbamobil.MST_BRANCH.BRANCH_ID " +
+                    "INNER JOIN ccmsmobil.VI_SELECTVEHICLEH2 ON ccmsmobil.VI_SELECTCUSTOMERH2.VO_ID = ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_OWNER_ID " +
+                    "INNER JOIN ccmsmobil.MST_VEHICLEMODEL ON ccmsmobil.VI_SELECTVEHICLEH2.VEHICLE_MODEL_CODE = ccmsmobil.MST_VEHICLEMODEL.VM_MODEL_CODE " +
+                    "where vo_branch_id in(" + strBranch + ")" + QrSERVICE + "" + QrJUMLAHSERVICE + "";
+                #endregion
+                oracleCommand = new OracleCommand(strGetData, oracleConnection);
+                OracleDataReader dataReader = oracleCommand.ExecuteReader();
+                if (dataReader.HasRows)
+                {
+                    while (dataReader.Read())
                     {
-                        string strMessageReplace = "";
-                        Regex findValue = new Regex(@"{name}|{tgl_beli}|{type_kendaraan}|{tgl_stnk}|{plat_no}|{last_service}|{birth_date}|{branch_name}|{branch_address}|{branch_phone}|{full_name}");
-                        Match findMatch = findValue.Match(lblMessageContentView.Text);
-                        if (findMatch.Success)
+                        if (!dataReader.IsDBNull(13))
                         {
-                            strMessageReplace = lblMessageContentView.Text.Replace("{name}", Cust_name[i]).Replace("{tgl_beli}", Tanggal_Beli[i]).Replace("{type_kendaraan}", Type_Kendaraan[i]).Replace("{tgl_stnk}", Tanggal_STNK[i]).Replace("{plat_no}", Plat_No[i]).Replace("{last_service}", Last_Service[i]).Replace("{birth_date}", Birth_Date[i]).Replace("{branch_name}", Branch_Name[i]).Replace("{branch_address}", Branch_Address[i]).Replace("{branch_phone}", Branch_Phone[i]).Replace("{full_name}", Full_name[i]);
+                            Cust_name.Add(dataReader.GetString(13));
                         }
                         else
                         {
-                            strMessageReplace = lblMessageContentView.Text;
+                            Console.WriteLine("No rows found");
                         }
-                        string CheckNumber = plan.GetPlanFilter("select wa_number from trx_whatsapp_message where trxid = '" + hiddenPlanId.Value + "' and wa_number = '" + Number[i] + "'");
-                        if (CheckNumber != "")
+                        if (!dataReader.IsDBNull(1))
                         {
-
+                            Number.Add(dataReader.GetString(1));
                         }
                         else
                         {
-                            plan.InsertGeneratePlan(SenderId[i], date, strSumberData, lblViewPlan.Text, Number[i], strMessageReplace, hiddenPlanId.Value, Doc_Ref[i]);
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(2))
+                        {
+                            SenderId.Add(dataReader.GetString(2));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(3))
+                        {
+                            Type_Kendaraan.Add(dataReader.GetString(3));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(4))
+                        {
+                            Plat_No.Add(dataReader.GetString(4));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(5))
+                        {
+                            Birth_Date.Add(dataReader.GetString(5));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(6))
+                        {
+                            Branch_Name.Add(dataReader.GetString(6));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(7))
+                        {
+                            Branch_Address.Add(dataReader.GetString(7));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(8))
+                        {
+                            Branch_Phone.Add(dataReader.GetString(8));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(10))
+                        {
+                            Tanggal_STNK.Add(dataReader.GetString(10));
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                        }
+                        if (!dataReader.IsDBNull(11))
+                        {
+                            Last_Service.Add(dataReader.GetString(11));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(9))
+                        {
+                            Tanggal_Beli.Add(dataReader.GetString(9));
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                        }
+                        if (!dataReader.IsDBNull(12))
+                        {
+                            Doc_Ref.Add(dataReader.GetString(12));
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
+                        }
+                        if (!dataReader.IsDBNull(13))
+                        {
+                            Full_name.Add(dataReader.GetString(13));
+                        }
+                        else
+                        {
+                            Console.WriteLine("");
                         }
                     }
-                    catch (Exception ex)
+                    dataReader.Close();
+                    for (int i = 0; i < Number.Count; i++)
                     {
+                        try
+                        {
+                            string strMessageReplace = "";
+                            Regex findValue = new Regex(@"{name}|{tgl_beli}|{type_kendaraan}|{tgl_stnk}|{plat_no}|{last_service}|{birth_date}|{branch_name}|{branch_address}|{branch_phone}|{full_name}");
+                            Match findMatch = findValue.Match(lblMessageContentView.Text);
+                            if (findMatch.Success)
+                            {
+                                strMessageReplace = lblMessageContentView.Text.Replace("{name}", Cust_name[i]).Replace("{tgl_beli}", Tanggal_Beli[i]).Replace("{type_kendaraan}", Type_Kendaraan[i]).Replace("{tgl_stnk}", Tanggal_STNK[i]).Replace("{plat_no}", Plat_No[i]).Replace("{last_service}", Last_Service[i]).Replace("{birth_date}", Birth_Date[i]).Replace("{branch_name}", Branch_Name[i]).Replace("{branch_address}", Branch_Address[i]).Replace("{branch_phone}", Branch_Phone[i]).Replace("{full_name}", Full_name[i]);
+                            }
+                            else
+                            {
+                                strMessageReplace = lblMessageContentView.Text;
+                            }
+                            string CheckNumber = plan.GetPlanFilter("select wa_number from trx_whatsapp_message where trxid = '" + hiddenPlanId.Value + "' and wa_number = '" + Number[i] + "'");
+                            if (CheckNumber != "")
+                            {
 
+                            }
+                            else
+                            {
+                                plan.InsertGeneratePlan(SenderId[i], date, strSumberData, lblViewPlan.Text, Number[i], strMessageReplace, hiddenPlanId.Value, Doc_Ref[i]);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
                     }
                 }
+                //Add HeaderText
+                plan.InsertTrxMessageHeader(trxid, lblViewPlan.Text, date, "", HiddenPlanMedia.Value, HiddenPlanIsMedia.Value, HiddenScheduledMessage.Value, HiddenScheduledMessageTime.Value, hiddenPlanId.Value, strUser);
             }
-            //Add HeaderText
-            plan.InsertTrxMessageHeader(trxid, lblViewPlan.Text, date, "", HiddenPlanMedia.Value, HiddenPlanIsMedia.Value, HiddenScheduledMessage.Value, HiddenScheduledMessageTime.Value, hiddenPlanId.Value, strUser);
+            catch(Exception ex)
+            {
+
+            }
+            finally
+            {
+                oracleConnection.Close();
+            }
         }
 
         private void showPlanView(string strPlanId)
