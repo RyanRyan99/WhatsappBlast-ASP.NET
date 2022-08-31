@@ -11,6 +11,8 @@ using System.Web;
 using whatsappmobil.ssl;
 using whatsappmobil.sender;
 using System.Threading;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace whatsappmobil.scheduler
 {
@@ -206,12 +208,18 @@ namespace whatsappmobil.scheduler
                     {
                         if (strmedia == " ")
                         {
-                            ScheduleSendChat(senderid[i], number[i], message[i], id[i]);
+                            //ScheduleSendChat(senderid[i], number[i], message[i], id[i]);
+
+                            //Using Baileys Plugin
+                            SendingTextBaileys(senderid[i], number[i], message[i], id[i]);
                         }
                         else
                         {
                             string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + strmedia);
-                            ScheduleSendMedia(senderid[i], number[i], message[i], filefile, id[i]);
+                            //ScheduleSendMedia(senderid[i], number[i], message[i], filefile, id[i]);
+
+                            //Using Baileys Plugin
+                            SendingMediaBaileys(senderid[i], number[i], message[i], strmedia, id[i]);
                         }
                         int Random = RandomTime();
                         Thread.Sleep(Random);
@@ -237,7 +245,7 @@ namespace whatsappmobil.scheduler
                 using (var client = new HttpClient())
                 {
                     SenderSingleChat SenderSingleChat = new SenderSingleChat { sender = senderid, number = number, message = message };
-                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-message");
+                    client.BaseAddress = new Uri("http://36.67.190.179:9001/send-message");
                     var response = client.PostAsJsonAsync("", SenderSingleChat).Result;
                     if (response.IsSuccessStatusCode)
                     {
@@ -266,7 +274,7 @@ namespace whatsappmobil.scheduler
                 using (var client = new HttpClient())
                 {
                     SenderSingleChatMedia SenderSingleChatMedia = new SenderSingleChatMedia { sender = senderid, number = number, caption = caption, file = file };
-                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-media");
+                    client.BaseAddress = new Uri("http://36.67.190.179:9001/send-media");
                     var response = client.PostAsJsonAsync("", SenderSingleChatMedia).Result;
                     if (response.IsSuccessStatusCode)
                     {
@@ -286,6 +294,70 @@ namespace whatsappmobil.scheduler
             catch (Exception ex)
             {
                 plan.getDataTable(@"update trx_whatsapp_message set session_notic = '" + ex + "' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trxid = '" + strid + "'");
+            }
+        }
+
+        private void SendingTextBaileys(string senderid, string number, string message, string strid)
+        {
+            try
+            {
+                //If Number Not start with 62
+                if (number.StartsWith("0"))
+                {
+                    number = "62" + number.Substring(1);
+                }
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send?id="+senderid+"");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                request.Content = new StringContent("{\"receiver\":\""+number+"\",\"message\":{\"text\": \""+message+"\"}}", Encoding.UTF8, "application/json");
+                client.SendAsync(request).ContinueWith(responseTask =>
+                {
+                    if (responseTask.Result.IsSuccessStatusCode)
+                    {
+                        plan.UpdateSuccessMessage(senderid, number, strid);
+                    }
+                    else
+                    {
+                        plan.UpdateFailedMessage(senderid, number, strid);
+                    }
+                });
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        private void SendingMediaBaileys(string senderid, string number, string caption, string file, string strid)
+        {
+            try
+            {
+                //If Number Not start with 62
+                if (number.StartsWith("0"))
+                {
+                    number = "62" + number.Substring(1);
+                }
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send-media?id="+senderid+"");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                request.Content = new StringContent("{\"receiver\":\""+number+"\",\"message\":{\"image\":{\"url\": \"http://36.67.190.179:8001/Media/"+file+" \"}, \"caption\": \""+caption+"\"}}", Encoding.UTF8, "application/json");
+                client.SendAsync(request).ContinueWith(responseTask =>
+                {
+                    if (responseTask.Result.IsSuccessStatusCode)
+                    {
+                        plan.UpdateSuccessMessage(senderid, number, strid);
+                    }
+                    else
+                    {
+                        plan.UpdateFailedMessage(senderid, number, strid);
+                    }
+                });
+            }
+            catch(Exception ex)
+            {
+
             }
         }
     }

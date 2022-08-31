@@ -310,7 +310,7 @@ namespace whatsappmobil
                         IJobDetail jobMessage = JobBuilder.Create<ScheduledMessage>().WithIdentity("job1", "group1").Build();
                         ITrigger trigger = TriggerBuilder.Create()
                         .WithIdentity("trigger5", "group1")
-                        .StartAt(DateBuilder.FutureDate(3, IntervalUnit.Minute)) // use DateBuilder to create a date in the future
+                        .StartAt(DateBuilder.FutureDate(3, IntervalUnit.Second)) // use DateBuilder to create a date in the future
                         .ForJob(jobMessage) // identify job with its JobKey
                         .Build();
                         schedulerMessage.ScheduleJob(jobMessage, trigger);
@@ -393,7 +393,7 @@ namespace whatsappmobil
                                 using (var client = new HttpClient())
                                 {
                                     Sender sen = new Sender { sender = SenderId[i], number = Number[i], message = Message[i] };
-                                    client.BaseAddress = new Uri("http://192.168.100.1:9001/");
+                                    client.BaseAddress = new Uri("http://36.67.190.179:9001/");
                                     var response = client.PostAsJsonAsync("send-message", sen).Result;
                                     if (response.IsSuccessStatusCode)
                                     {
@@ -417,7 +417,7 @@ namespace whatsappmobil
                                 {
                                     string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + media);
                                     SenderSingleChatMedia SenderSingleChatMedia = new SenderSingleChatMedia { sender = SenderId[i], number = Number[i], caption = Message[i], file = filefile };
-                                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-media");
+                                    client.BaseAddress = new Uri("http://36.67.190.179:9001/send-media");
                                     var response = client.PostAsJsonAsync("", SenderSingleChatMedia).Result;
                                     if (response.IsSuccessStatusCode)
                                     {
@@ -461,7 +461,7 @@ namespace whatsappmobil
                 using (var client = new HttpClient())
                 {
                     Sender sen = new Sender { sender = strSenderId, number = strNumber, message = strMessage };
-                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-message");
+                    client.BaseAddress = new Uri("http://36.67.190.179:9001/send-message");
                     var response = client.PostAsJsonAsync("", sen).Result;
                     if (response.IsSuccessStatusCode)
                     {
@@ -484,7 +484,7 @@ namespace whatsappmobil
                     //string filefile = Path.Combine(HttpRuntime.AppDomainAppPath, @"Media\" + strMedia);
                     string filefile = Server.MapPath("Media/" + strMedia);
                     SenderSingleChatMedia SenderSingleChatMedia = new SenderSingleChatMedia { sender = strSenderId, number = strNumber, caption = strMessage, file = filefile };
-                    client.BaseAddress = new Uri("http://192.168.100.1:9001/send-media");
+                    client.BaseAddress = new Uri("http://36.67.190.179:9001/send-media");
                     var response = client.PostAsJsonAsync("", SenderSingleChatMedia).Result;
                     if (response.IsSuccessStatusCode)
                     {

@@ -1896,6 +1896,7 @@
     <Content Include="Autoreply.aspx" />
     <Content Include="Chat.aspx" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="CreateSession.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="default.aspx" />
     <Content Include="Global.asax" />
@@ -2021,6 +2022,13 @@
     <Compile Include="Chat.aspx.designer.cs">
       <DependentUpon>Chat.aspx</DependentUpon>
     </Compile>
+    <Compile Include="CreateSession.aspx.cs">
+      <DependentUpon>CreateSession.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CreateSession.aspx.designer.cs">
+      <DependentUpon>CreateSession.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2075,6 +2083,7 @@
     <Compile Include="Schedulemessage.aspx.designer.cs">
       <DependentUpon>Schedulemessage.aspx</DependentUpon>
     </Compile>
+    <Compile Include="scheduler\BaileysScheduler.cs" />
     <Compile Include="scheduler\JobChainingJobListener.cs" />
     <Compile Include="scheduler\ScheduledMessage.cs" />
     <Compile Include="scheduler\ScheduledPlan.cs" />
@@ -2082,6 +2091,7 @@
     <Compile Include="sender\Chat.cs" />
     <Compile Include="sender\PrivateChat.cs" />
     <Compile Include="sender\ResponseReply.cs" />
+    <Compile Include="sender\SenderBaileys.cs" />
     <Compile Include="sender\SessionSender.cs" />
     <Compile Include="SentPlan.aspx.cs">
       <DependentUpon>SentPlan.aspx</DependentUpon>

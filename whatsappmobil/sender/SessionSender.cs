@@ -83,4 +83,10 @@ namespace whatsappmobil.sender
         public string name { get; set; }
         public string message { get; set; }
     }
+
+    public class AddSessionBaileys
+    {
+        public string id { get; set; }
+        public string isLegacy { get; set; }
+    }
 }
