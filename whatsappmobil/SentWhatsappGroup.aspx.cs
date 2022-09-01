@@ -88,6 +88,7 @@ namespace whatsappmobil
                     label.CssClass = "gradient-custom-button-2";
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
                     label.ToolTip = "Group Tidak Ditemukan";
+                    label.Style.Add("border-radius","20px");
                     btnSent.Enabled = false;
                     btnSent.BackColor = Color.FromKnownColor(KnownColor.DarkGray);
                     btnDelete.Enabled = false;
@@ -99,6 +100,7 @@ namespace whatsappmobil
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
                     label.Width = 150;
                     label.Text = "waiting for schedule";
+                    label.Style.Add("border-radius", "20px");
 
                     btnSent.Enabled = true;
                     btnSent.CssClass = "btn btn-sm gradient-custom-button-1 text-white";
@@ -109,6 +111,7 @@ namespace whatsappmobil
                 {
                     label.CssClass = "gradient-custom-button-1 text-white";
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
+                    label.Style.Add("border-radius", "20px");
                     btnSent.Enabled = false;
                     btnSent.BackColor = Color.FromKnownColor(KnownColor.DarkGray);
                     btnDelete.Enabled = false;

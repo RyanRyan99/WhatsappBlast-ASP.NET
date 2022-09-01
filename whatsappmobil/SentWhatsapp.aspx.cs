@@ -17,6 +17,8 @@ using Quartz.Impl;
 using whatsappmobil.scheduler;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace whatsappmobil
 {
@@ -134,7 +136,8 @@ namespace whatsappmobil
                 string getKeySent = e.CommandArgument.ToString();
                 string trxid = getKeySent.Split('|')[0];
                 string media = getKeySent.Split('|')[1];
-                SentAll(trxid, media);
+                //SentAll(trxid, media);
+                SentAllBaileys(trxid, media);
                 //SentScheduled();
                 Response.Redirect(Request.RawUrl, true);
             }
@@ -158,18 +161,21 @@ namespace whatsappmobil
                     type.CssClass = "gradient-custom-card-1";
                     type.ForeColor = Color.FromKnownColor(KnownColor.White);
                     type.Width = 50;
+                    type.Style.Add("border-radius","20px");
                 }
                 if(type.Text == "Media")
                 {
                     type.CssClass = "gradient-custom-card-2";
                     type.ForeColor = Color.FromKnownColor(KnownColor.White);
                     type.Width = 50;
+                    type.Style.Add("border-radius", "20px");
                 }
                 if (label.Text == "waiting for action")
                 {
                     label.CssClass = "gradient-custom-card-1";
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
                     label.Width = 150;
+                    label.Style.Add("border-radius", "20px");
 
                     LinkButton button = (LinkButton)row.FindControl("btnSentAll");
                     button.Enabled = true;
@@ -192,6 +198,7 @@ namespace whatsappmobil
                     label.CssClass = "gradient-custom-button-2";
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
                     label.Width = 50;
+                    label.Style.Add("border-radius", "20px");
                 }
             }
         }
@@ -255,7 +262,8 @@ namespace whatsappmobil
                 string senderId = strKey.Split('|')[2];
                 string trxid = strKey.Split('|')[3];
                 string pushname = strKey.Split('|')[4];
-                SentRow(senderId, number, message, trxid, pushname, HiddenMediaName.Value);
+                //SentRow(senderId, number, message, trxid, pushname, HiddenMediaName.Value);
+                SendRowBaileys(senderId, number, message, trxid, pushname, HiddenMediaName.Value);
             }
         }
 
@@ -499,6 +507,197 @@ namespace whatsappmobil
                         }
                     }
                 }
+            }
+        }
+
+        private void SentAllBaileys(string strTrxId, string media)
+        {
+            string ConnectionString = ConfigurationManager.AppSettings["ConnectionStringH2"];
+            OracleConnection oracleConnection = new OracleConnection(ConnectionString);
+            oracleConnection.Open();
+            try
+            {
+                List<string> SenderId = new List<string>();
+                List<string> Number = new List<string>();
+                List<string> Message = new List<string>();
+                List<string> PushName = new List<string>();
+
+                string strGetData = "";
+                OracleCommand oracleCommand = null;
+
+                strGetData = "select sender_id, wa_number, message_content, push_name from trx_whatsapp_message where trxid = '" + strTrxId + "' and status_session = '0'";
+                oracleCommand = new OracleCommand(strGetData, oracleConnection);
+                OracleDataReader dataReader = oracleCommand.ExecuteReader();
+                if (dataReader.HasRows)
+                {
+                    while (dataReader.Read())
+                    {
+                        if (!dataReader.IsDBNull(0))
+                        {
+                            SenderId.Add(dataReader.GetString(0));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(1))
+                        {
+                            Number.Add(dataReader.GetString(1));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(2))
+                        {
+                            Message.Add(dataReader.GetString(2));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                        if (!dataReader.IsDBNull(3))
+                        {
+                            PushName.Add(dataReader.GetString(3));
+                        }
+                        else
+                        {
+                            Console.WriteLine("No rows found");
+                        }
+                    }
+                    dataReader.Close();
+                    for (int i = 0; i < Number.Count; i++)
+                    {
+                        try
+                        {
+                            if (media == "")
+                            {
+                                //Text
+                                if (Number[i].StartsWith("0"))
+                                {
+                                    Number[i] = "62" + Number[i].Substring(1);
+                                }
+                                HttpClient client = new HttpClient();
+                                client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send?id="+SenderId[i]+"");
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                                request.Content = new StringContent("{\"receiver\":\""+Number[i]+"\",\"message\":{\"text\": \""+Message[i]+"\"}}", Encoding.UTF8, "application/json");
+                                //client.SendAsync(request).ContinueWith(responseTask =>{Console.WriteLine("Response: {0}", responseTask.Result);});
+                                client.SendAsync(request).ContinueWith(responseTask =>
+                                {
+                                    if (responseTask.Result.IsSuccessStatusCode)
+                                    {
+                                        fcn.UpdateStatusHeader(strTrxId);
+                                        fcn.UpdateStatusMessage(strTrxId, Number[i], "1");
+                                    }
+                                    else
+                                    {
+                                        fcn.UpdateSessionNotic(strTrxId, Number[i], "The number is not registered");
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                //Media
+                                if (Number[i].StartsWith("0"))
+                                {
+                                    Number[i] = "62" + Number[i].Substring(1);
+                                }
+                                HttpClient client = new HttpClient();
+                                client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send-media?id="+SenderId[i]+"");
+                                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                                request.Content = new StringContent("{\"receiver\":\"" + Number[i] + "\",\"message\":{\"image\":{\"url\": \"http://36.67.190.179:8001/Media/"+media+" \"}, \"caption\": \""+Message[i]+"\"}}", Encoding.UTF8, "application/json");
+                                client.SendAsync(request).ContinueWith(responseTask =>
+                                {
+                                    if (responseTask.Result.IsSuccessStatusCode)
+                                    {
+                                        fcn.UpdateStatusHeader(strTrxId);
+                                        fcn.UpdateStatusMessage(strTrxId, Number[i], "1");
+                                    }
+                                    else
+                                    {
+                                        fcn.UpdateSessionNotic(strTrxId, Number[i], "The number is not registered");
+                                    }
+                                });
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Terjadi kesalahan pada session devices')", true);
+                        }
+                    }
+                }
+                else
+                {
+                    ScriptManager.RegisterClientScriptBlock(this, this.GetType(), "alertMessage", "alert('Pesan sudah terkirim semua yaaa')", true);
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
+
+        private void SendRowBaileys(string strSenderId, string strNumber, string strMessage, string strTrxId, string strpushname, string strMedia)
+        {
+            try
+            {
+                if (strMedia == "")
+                {
+                    //Text
+                    if (strNumber.StartsWith("0"))
+                    {
+                        strNumber = "62" + strNumber.Substring(1);
+                    }
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send?id="+strSenderId+"");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                    request.Content = new StringContent("{\"receiver\":\"" + strNumber + "\",\"message\":{\"text\": \""+strMessage+"\"}}", Encoding.UTF8, "application/json");
+                    client.SendAsync(request).ContinueWith(responseTask =>
+                    {
+                        if (responseTask.Result.IsSuccessStatusCode)
+                        {
+                            fcn.UpdateStatusHeader(strTrxId);
+                            fcn.UpdateStatusMessage(strTrxId, strNumber, "1");
+                        }
+                        else
+                        {
+                            fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
+                        }
+                    });
+                }
+                else
+                {
+                    //Media
+                    if (strNumber.StartsWith("0"))
+                    {
+                        strNumber = "62" + strNumber.Substring(1);
+                    }
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send-media?id="+strSenderId+"");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                    request.Content = new StringContent("{\"receiver\":\"" + strNumber + "\",\"message\":{\"image\":{\"url\": \"http://36.67.190.179:8001/Media/"+strMedia+" \"}, \"caption\": \""+strMessage+"\"}}", Encoding.UTF8, "application/json");
+                    client.SendAsync(request).ContinueWith(responseTask =>
+                    {
+                        string s = responseTask.Result.StatusCode.ToString();
+                        if (responseTask.Result.IsSuccessStatusCode)
+                        {
+                            fcn.UpdateStatusHeader(strTrxId);
+                            fcn.UpdateStatusMessage(strTrxId, strNumber, "1");
+                        }
+                        else
+                        {
+                            fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
+                        }
+                    });
+                }
+            }
+            catch(Exception ex)
+            {
+
             }
         }
 

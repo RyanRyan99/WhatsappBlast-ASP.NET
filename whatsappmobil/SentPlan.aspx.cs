@@ -374,6 +374,8 @@ namespace whatsappmobil
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
                     label.Width = 150;
                     label.ToolTip = "Menunggu Jadwal";
+                    label.Style.Add("border-radius","20px");
+                    
                 }
                 if (label.Text == "Generate")
                 {
@@ -381,6 +383,7 @@ namespace whatsappmobil
                     label.ForeColor = Color.FromKnownColor(KnownColor.White);
                     label.Width = 70;
                     label.ToolTip = "Sudah di Eksekusi";
+                    label.Style.Add("border-radius", "20px");
 
                     button.Enabled = true;
                     button.BackColor = Color.FromKnownColor(KnownColor.DarkGray);
