@@ -62,7 +62,7 @@ namespace whatsappmobil
                 string checkdata = fn.getDataTable("select * from trx_whatsapp_session where session_id = '"+ddlSessionId.SelectedValue+"'");
                 if(checkdata == "")
                 {
-                    fc.InsertSession(ddlSessionId.SelectedValue, ddlIsLegecy.SelectedValue, "0", strUser);
+                    fc.InsertSession(ddlSessionId.SelectedValue, ddlIsLegecy.SelectedValue, "0", strUser, txtSessDesc.Text);
                     Response.Redirect(Request.RawUrl, true);
                 }
                 else
@@ -82,7 +82,7 @@ namespace whatsappmobil
         {
             using (OracleConnection con = new OracleConnection(ConnectionStringH2))
             {
-                using (OracleCommand cmd = new OracleCommand("select session_id, is_legecy, decode(session_status, '0', 'Not Connected', '1', 'Connected...') session_status from trx_whatsapp_session"))
+                using (OracleCommand cmd = new OracleCommand("select session_id, is_legecy, decode(session_status, '0', 'Not Connected', '1', 'Connected...') session_status, session_description from trx_whatsapp_session"))
                 {
                     using (OracleDataAdapter sda = new OracleDataAdapter())
                     {

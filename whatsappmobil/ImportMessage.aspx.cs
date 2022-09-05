@@ -1,4 +1,5 @@
-﻿using NPOI.HSSF.UserModel;
+﻿using Newtonsoft.Json;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
@@ -253,24 +254,56 @@ namespace whatsappmobil
             {
                 try
                 {
+                    #region Baileys
                     using (var client = new HttpClient())
                     {
-                        SenderReply sen = new SenderReply { sender = ddlSessionId.SelectedValue };
-                        client.BaseAddress = new Uri("http://192.168.100.1:9001/checksession");
-                        var response = client.PostAsJsonAsync("", sen).Result;
+                        client.BaseAddress = new Uri("http://localhost:8000/sessions/status/?id="+ddlSessionId.SelectedValue+"");
+                        var response = client.GetAsync("").Result;
                         if (response.IsSuccessStatusCode)
                         {
-
+                            string getresponse = response.Content.ReadAsStringAsync().Result;
+                            var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("[" + getresponse + "]");
+                            foreach (var dd in result)
+                            {
+                                string status = dd.data.status.ToString();
+                                string success = dd.success.ToString();
+                                if (success == "True")
+                                {
+                                    if (status != "connected")
+                                    {
+                                        //ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alerterror('Connected', 'info');", true);
+                                    }
+                                }
+                            }
                         }
                         else
                         {
-                            if (response.StatusCode.ToString() == "422")
-                            {
-                                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('" + ddlSessionId.SelectedItem.Text + " tidak terhubung', 'warning', 'Harap hubungkan device terlebih dahulu');", true);
-                                ddlSessionId.SelectedValue = "";
-                            }
+                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('"+ddlSessionId.SelectedItem.Text+" tidak terhubung', 'warning', 'Harap hubungkan device terlebih dahulu');", true);
+                            ddlSessionId.SelectedValue = "";
                         }
                     }
+                    #endregion
+
+                    #region Whatsapp-web.js
+                    //using (var client = new HttpClient())
+                    //{
+                    //    SenderReply sen = new SenderReply { sender = ddlSessionId.SelectedValue };
+                    //    client.BaseAddress = new Uri("http://192.168.100.1:9001/checksession");
+                    //    var response = client.PostAsJsonAsync("", sen).Result;
+                    //    if (response.IsSuccessStatusCode)
+                    //    {
+
+                    //    }
+                    //    else
+                    //    {
+                    //        if (response.StatusCode.ToString() == "422")
+                    //        {
+                    //            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('" + ddlSessionId.SelectedItem.Text + " tidak terhubung', 'warning', 'Harap hubungkan device terlebih dahulu');", true);
+                    //            ddlSessionId.SelectedValue = "";
+                    //        }
+                    //    }
+                    //}
+                    #endregion
                 }
                 catch (Exception ex)
                 {

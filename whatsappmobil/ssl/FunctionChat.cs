@@ -89,7 +89,7 @@ namespace whatsappmobil.ssl
             }
         }
 
-        public void InsertSession(string strSessionId, string strIsLegecy, string strSessioStatus, string strCreateBy)
+        public void InsertSession(string strSessionId, string strIsLegecy, string strSessioStatus, string strCreateBy, string strSessionDesc)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace whatsappmobil.ssl
                 OracleCommand DBCommand;
                 DBConnection.Open();
 
-                var Query = "insert into trx_whatsapp_session(SESSION_ID, IS_LEGECY, SESSION_STATUS, CREATE_DATE, CREATE_BY) values('"+strSessionId+"','"+strIsLegecy+"','"+strSessioStatus+"',sysdate,'"+strCreateBy+"')";
+                var Query = "insert into trx_whatsapp_session(SESSION_ID, IS_LEGECY, SESSION_STATUS, CREATE_DATE, CREATE_BY, SESSION_DESCRIPTION) values('" + strSessionId+"','"+strIsLegecy+"','"+strSessioStatus+"',sysdate,'"+strCreateBy+"', '"+strSessionDesc+"')";
                 try
                 {
                     DBCommand = new OracleCommand(Query, DBConnection);

@@ -28,21 +28,26 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="d-flex">
-                                        <asp:Label runat="server" ID="lblAdd" ForeColor="GrayText">Add Session</asp:Label>
+                                        <div class="mb-2">
+                                            <asp:Label runat="server" ID="lblAdd" ForeColor="GrayText">Add Session</asp:Label>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <div class="d-flex flex-row-reverse">
+                                    <div class="mb-2">
+                                        <div class="d-flex flex-row-reverse">
                                         <asp:LinkButton runat="server" ID="btnAdd" CssClass="btn btn-sm gradient-custom-button-1 text-white" OnClick="btnAdd_Click">Add &nbsp; <i class="fa-solid fa-plus"></i></asp:LinkButton>
+                                    </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
                                     <asp:GridView runat="server" ID="gvListDevices" AutoGenerateColumns="false" GridLines="None" CssClass="table table-responsive w-100 d-block d-md-table"
-                                        OnRowCommand="gvListDevices_RowCommand" OnRowDataBound="gvListDevices_RowDataBound" PageSize="10" EmptyDataText="No Devices Available" Font-Size="Smaller">
+                                        OnRowCommand="gvListDevices_RowCommand" OnRowDataBound="gvListDevices_RowDataBound" PageSize="10" EmptyDataText="No Devices Available" Font-Size="Smaller" HeaderStyle-BackColor="#3cd4a4" HeaderStyle-ForeColor="White">
                                         <Columns>
                                             <asp:BoundField DataField="session_id" HeaderText="Perangkat" />
+                                            <asp:BoundField DataField="session_description" HeaderText="Deskripsi"/>
                                             <asp:TemplateField HeaderText="Tipe Klien">
                                                 <ItemTemplate>
                                                     <asp:Label runat="server" ID="lblIsLegecy" Text='<%# Bind("is_legecy") %>'></asp:Label>
@@ -88,7 +93,7 @@
                 <div class="modal-body">
                     <asp:UpdatePanel runat="server" ID="pnlBarcode">
                         <ContentTemplate>
-                            <div class="col-md-12">
+                            <div class="col-md-12 align-content-center">
                                 <img runat="server" id="imgBarcode" src="" />
                             </div>
                         </ContentTemplate>
@@ -137,6 +142,10 @@
                                         <asp:ListItem Value="false">Beta Multi-Device (RECOMENDED)</asp:ListItem>
                                         <asp:ListItem Value="true">Normal WhatsApp Web / Legacy</asp:ListItem>
                                     </asp:DropDownList>
+                                </div>
+                                <div class="mb-1">
+                                    <asp:Label runat="server" ID="lblSessDesc" CssClass="form-label d-flex mb-1" Font-Bold="true" Font-Size="Smaller">Deskripsi</asp:Label>
+                                    <asp:TextBox runat="server" ID="txtSessDesc" CssClass="form-control" TextMode="MultiLine" Height="50" Font-Size="Smaller" placeholder="Deskirpsi Devices"></asp:TextBox>
                                 </div>
                             </div>
                         </ContentTemplate>

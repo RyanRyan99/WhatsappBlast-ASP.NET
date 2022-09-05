@@ -38,8 +38,8 @@
                                     <asp:HiddenField runat="server" ID="HiddenPlanIsMedia" />
                                     <asp:HiddenField runat="server" ID="HiddenScheduledMessage" />
                                     <asp:HiddenField runat="server" ID="HiddenScheduledMessageTime" />
-                                    <asp:HiddenField runat="server" ID="HiddenIsMedia"/>
-                                    <asp:HiddenField runat="server" ID="HiddenFileNameBeforUpdate"/>
+                                    <asp:HiddenField runat="server" ID="HiddenIsMedia" />
+                                    <asp:HiddenField runat="server" ID="HiddenFileNameBeforUpdate" />
                                 </div>
                                 <ul class="nav nav-tabs">
                                     <li class="nav-item">
@@ -73,13 +73,17 @@
                                                         <div class="mb-1">
                                                             <asp:Label runat="server" ID="lblsessionid" CssClass="form-label d-flex" Font-Size="Smaller" Font-Bold="true">Devices</asp:Label>
                                                             <asp:DropDownList runat="server" ID="ddlSessionId" CssClass="form-control form-control-sm" AutoPostBack="true" OnSelectedIndexChanged="ddlSessionId_SelectedIndexChanged">
-                                                                <asp:ListItem Value="">Pilih Devices</asp:ListItem>
+                                                                <asp:ListItem Value="">Pilih</asp:ListItem>
                                                                 <asp:ListItem Value="CIMONE">CIMONE</asp:ListItem>
                                                                 <asp:ListItem Value="CIMONE1">CIMONE 1</asp:ListItem>
                                                                 <asp:ListItem Value="CIMONE2">CIMONE 2</asp:ListItem>
                                                                 <asp:ListItem Value="CIMONE3">CIMONE 3</asp:ListItem>
                                                                 <asp:ListItem Value="CIMONE4">CIMONE 4</asp:ListItem>
                                                                 <asp:ListItem Value="CIMONE5">CIMONE 5</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE6">CIMONE 6</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE7">CIMONE 7</asp:ListItem>
+                                                                <asp:ListItem Value="CIMONE8">CIMONE 8</asp:ListItem>
+                                                                <asp:ListItem Value="TESTING">TESTING DEV (X)</asp:ListItem>
                                                             </asp:DropDownList>
                                                         </div>
 
@@ -211,7 +215,7 @@
                                                             </asp:CheckBoxList>
                                                         </div>
                                                         <hr class="text-success" />
-                                                        
+
                                                         <div class="mb-3">
                                                             <asp:Label runat="server" ID="lblCriteriaCust" CssClass="form-label d-flex" Font-Size="Smaller" Font-Bold="true">Kriteria Customer</asp:Label>
                                                         </div>
