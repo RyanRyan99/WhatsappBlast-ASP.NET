@@ -72,6 +72,10 @@
                                                         <asp:ListItem Value="CIMONE3">CIMONE 3</asp:ListItem>
                                                         <asp:ListItem Value="CIMONE4">CIMONE 4</asp:ListItem>
                                                         <asp:ListItem Value="CIMONE5">CIMONE 5</asp:ListItem>
+                                                        <asp:ListItem Value="CIMONE6">CIMONE 6</asp:ListItem>
+                                                        <asp:ListItem Value="CIMONE7">CIMONE 7</asp:ListItem>
+                                                        <asp:ListItem Value="CIMONE8">CIMONE 8</asp:ListItem>
+                                                        <asp:ListItem Value="TESTING">TESTING DEV (X)</asp:ListItem>
                                                     </asp:DropDownList>
                                                 </div>
                                                 <div class="row">

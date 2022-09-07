@@ -5,6 +5,8 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Web;
 using System.Web.UI;
@@ -52,23 +54,25 @@ namespace whatsappmobil
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    SenderReply sen = new SenderReply { sender = ddlSessionId.SelectedValue };
-                    client.BaseAddress = new Uri("http://192.168.100.1:9001/checksession");
-                    var response = client.PostAsJsonAsync("", sen).Result;
-                    if (response.IsSuccessStatusCode)
-                    {
+                #region Whatsapp-Web.js
+                //using (var client = new HttpClient())
+                //{
+                //    SenderReply sen = new SenderReply { sender = ddlSessionId.SelectedValue };
+                //    client.BaseAddress = new Uri("http://192.168.100.1:9001/checksession");
+                //    var response = client.PostAsJsonAsync("", sen).Result;
+                //    if (response.IsSuccessStatusCode)
+                //    {
 
-                    }
-                    else
-                    {
-                        if (response.StatusCode.ToString() == "422")
-                        {
-                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Session Tidak Ditemukan', 'error');", true);
-                        }
-                    }
-                }
+                //    }
+                //    else
+                //    {
+                //        if (response.StatusCode.ToString() == "422")
+                //        {
+                //            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Session Tidak Ditemukan', 'error');", true);
+                //        }
+                //    }
+                //}
+                #endregion
             }
             catch (Exception ex)
             {
@@ -94,26 +98,48 @@ namespace whatsappmobil
                 }
                 else
                 {
-                    using (var client = new HttpClient())
+                    #region Baileys
+                    HttpClient client = new HttpClient();
+                    client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/insertreply");
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                    request.Content = new StringContent("{\"id\":\""+ddlSessionId.SelectedValue+"\",\"content\": \""+txtReplyContent.Text+"\",\"isreply\": \""+txtReplyDesc.Text+"\"}", Encoding.UTF8, "application/json");
+                    client.SendAsync(request).ContinueWith(responseTask =>
                     {
-                        SenderInsertReply sen = new SenderInsertReply { sender = ddlSessionId.SelectedValue, content = txtReplyContent.Text, messagecontent = txtReplyDesc.Text };
-                        client.BaseAddress = new Uri("http://192.168.100.1:9001/insertreply");
-                        var response = client.PostAsJsonAsync("", sen).Result;
-                        if (response.IsSuccessStatusCode)
+                        if (responseTask.Result.IsSuccessStatusCode)
                         {
                             fcn.InsertWhatsappReply(ddlSessionId.SelectedValue, txtReplyContent.Text, txtReplyDesc.Text);
-                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Sukses', 'success');", true);
                             Thread.Sleep(500);
-                            Response.Redirect(Request.RawUrl, false);
+                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Insert Sukses', 'success');", true);
                         }
                         else
                         {
-                            if (response.StatusCode.ToString() == "422")
-                            {
-                                ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Terjadi Kesalahan', 'error');", true);
-                            }
+                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Gagal Insert', 'warning');", true);
                         }
-                    }
+                    });
+                    #endregion
+                    #region Whatsapp-web.js
+                    //using (var client = new HttpClient())
+                    //{
+                    //    SenderInsertReply sen = new SenderInsertReply { sender = ddlSessionId.SelectedValue, content = txtReplyContent.Text, messagecontent = txtReplyDesc.Text };
+                    //    client.BaseAddress = new Uri("http://192.168.100.1:9001/insertreply");
+                    //    var response = client.PostAsJsonAsync("", sen).Result;
+                    //    if (response.IsSuccessStatusCode)
+                    //    {
+                    //        fcn.InsertWhatsappReply(ddlSessionId.SelectedValue, txtReplyContent.Text, txtReplyDesc.Text);
+                    //        ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Sukses', 'success');", true);
+                    //        Thread.Sleep(500);
+                    //        Response.Redirect(Request.RawUrl, false);
+                    //    }
+                    //    else
+                    //    {
+                    //        if (response.StatusCode.ToString() == "422")
+                    //        {
+                    //            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Terjadi Kesalahan', 'error');", true);
+                    //        }
+                    //    }
+                    //}
+                    #endregion
                 }
             }
             catch (Exception ex)
@@ -155,24 +181,45 @@ namespace whatsappmobil
         {
             try
             {
-                using (var client = new HttpClient())
+                #region Baileys
+                HttpClient client = new HttpClient();
+                client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/deletereply");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                request.Content = new StringContent("{\"id\":\""+strSender+"\",\"content\": \""+strReply+"\"}", Encoding.UTF8, "application/json");
+                client.SendAsync(request).ContinueWith(responseTask =>
                 {
-                    SenderInsertReply sen = new SenderInsertReply { sender = strSender, content = strReply, messagecontent = strTemplate };
-                    client.BaseAddress = new Uri("http://192.168.100.1:9001/deletereply");
-                    var response = client.PostAsJsonAsync("", sen).Result;
-                    if (response.IsSuccessStatusCode)
+                    if (responseTask.Result.IsSuccessStatusCode)
                     {
+                        ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Delete Sukses', 'success');", true);
                         fcn.DeleteWhatsappReply(strSender, strReply, strTemplate);
                     }
                     else
                     {
-                        if (response.StatusCode.ToString() == "422")
-                        {
-                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Terjadi Kesalahan', 'error');", true);
-                        }
+                        ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Gagal Delete', 'warning');", true);
                     }
-                    Response.Redirect(Request.RawUrl, false);
-                }
+                });
+                #endregion
+                #region Whatsapp-web.js
+                //using (var client = new HttpClient())
+                //{
+                //    SenderInsertReply sen = new SenderInsertReply { sender = strSender, content = strReply, messagecontent = strTemplate };
+                //    client.BaseAddress = new Uri("http://192.168.100.1:9001/deletereply");
+                //    var response = client.PostAsJsonAsync("", sen).Result;
+                //    if (response.IsSuccessStatusCode)
+                //    {
+                //        fcn.DeleteWhatsappReply(strSender, strReply, strTemplate);
+                //    }
+                //    else
+                //    {
+                //        if (response.StatusCode.ToString() == "422")
+                //        {
+                //            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alert('Terjadi Kesalahan', 'error');", true);
+                //        }
+                //    }
+                //    Response.Redirect(Request.RawUrl, false);
+                //}
+                #endregion
             }
             catch (Exception ex)
             {

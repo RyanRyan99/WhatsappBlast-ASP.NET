@@ -93,8 +93,14 @@
                 <div class="modal-body">
                     <asp:UpdatePanel runat="server" ID="pnlBarcode">
                         <ContentTemplate>
-                            <div class="col-md-12 align-content-center">
-                                <img runat="server" id="imgBarcode" src="" />
+                            <div class="col-md-12">
+                                <div class="align-items-center">
+                                    <img runat="server" id="imgBarcode" src="" />
+                                </div>
+                                <hr />
+                                <div class="mt-2">
+                                    <asp:Label runat="server" ID="lblStatImage" Font-Size="X-Small">Silahkan Close jika Whatsapp di smartphone sudah terhubung</asp:Label>
+                                </div>
                             </div>
                         </ContentTemplate>
                     </asp:UpdatePanel>

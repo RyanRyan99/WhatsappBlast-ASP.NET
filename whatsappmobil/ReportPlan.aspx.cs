@@ -8,6 +8,8 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
@@ -522,44 +524,95 @@ namespace whatsappmobil
                     {
                         if (WaMedia[i] != " ")
                         {
-                            string strFilePath = Server.MapPath("Media/" + WaMedia[i]);
-                            using (var client = new HttpClient())
+                            //Media
+                            #region Baileys
+                            if (WhatsappNumber[i].StartsWith("0"))
                             {
-                                Sender sen = new Sender { sender = SenderId[i], number = WhatsappNumber[i], caption = Message[i], file = strFilePath };
-                                client.BaseAddress = new Uri("http://192.168.100.1:9001/");
-                                var response = client.PostAsJsonAsync("send-media", sen).Result;
-                                if (response.IsSuccessStatusCode)
+                                WhatsappNumber[i] = "62" + WhatsappNumber[i].Substring(1);
+                            }
+                            HttpClient client = new HttpClient();
+                            client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send-media?id="+SenderId[i]+"");
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                            request.Content = new StringContent("{\"receiver\":\""+WhatsappNumber[i]+"\",\"message\":{\"image\":{\"url\": \"http://36.67.190.179:8001/Media/"+WaMedia[i]+" \"}, \"caption\": \""+Message[i]+"\"}}", Encoding.UTF8, "application/json");
+                            client.SendAsync(request).ContinueWith(responseTask =>
+                            {
+                                if (responseTask.Result.IsSuccessStatusCode)
                                 {
                                     Freport.UpdateStatusMessageReport(SentDate[i], WhatsappNumber[i]);
                                 }
                                 else
                                 {
-                                    if (response.StatusCode.ToString() == "422")
-                                    {
-                                        Freport.UpdateSessionNoticReport(SentDate[i], WhatsappNumber[i], "The number is not registered");
-                                    }
+                                    Freport.UpdateSessionNoticReport(SentDate[i], WhatsappNumber[i], "The number is not registered");
                                 }
-                            }
+                            });
+                            #endregion
+                            #region Whatsapp-web.js
+                            //string strFilePath = Server.MapPath("Media/" + WaMedia[i]);
+                            //using (var client = new HttpClient())
+                            //{
+                            //    Sender sen = new Sender { sender = SenderId[i], number = WhatsappNumber[i], caption = Message[i], file = strFilePath };
+                            //    client.BaseAddress = new Uri("http://192.168.100.1:9001/");
+                            //    var response = client.PostAsJsonAsync("send-media", sen).Result;
+                            //    if (response.IsSuccessStatusCode)
+                            //    {
+                            //        Freport.UpdateStatusMessageReport(SentDate[i], WhatsappNumber[i]);
+                            //    }
+                            //    else
+                            //    {
+                            //        if (response.StatusCode.ToString() == "422")
+                            //        {
+                            //            Freport.UpdateSessionNoticReport(SentDate[i], WhatsappNumber[i], "The number is not registered");
+                            //        }
+                            //    }
+                            //}
+                            #endregion
                         }
                         else
                         {
-                            using (var client = new HttpClient())
+                            //Text
+                            #region Baileys
+                            if (WhatsappNumber[i].StartsWith("0"))
                             {
-                                Sender sen = new Sender { sender = SenderId[i], number = WhatsappNumber[i], message = Message[i] };
-                                client.BaseAddress = new Uri("http://192.168.100.1:9001/");
-                                var response = client.PostAsJsonAsync("send-message", sen).Result;
-                                if (response.IsSuccessStatusCode)
+                                WhatsappNumber[i] = "62" + WhatsappNumber[i].Substring(1);
+                            }
+                            HttpClient client = new HttpClient();
+                            client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send?id="+SenderId[i]+"");
+                            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
+                            request.Content = new StringContent("{\"receiver\":\""+WhatsappNumber[i]+"\",\"message\":{\"text\": \""+Message[i]+"\"}}", Encoding.UTF8, "application/json");
+                            //client.SendAsync(request).ContinueWith(responseTask =>{Console.WriteLine("Response: {0}", responseTask.Result);});
+                            client.SendAsync(request).ContinueWith(responseTask =>
+                            {
+                                if (responseTask.Result.IsSuccessStatusCode)
                                 {
                                     Freport.UpdateStatusMessageReport(SentDate[i], WhatsappNumber[i]);
                                 }
                                 else
                                 {
-                                    if (response.StatusCode.ToString() == "422")
-                                    {
-                                        Freport.UpdateSessionNoticReport(SentDate[i], WhatsappNumber[i], "The number is not registered");
-                                    }
+                                    Freport.UpdateSessionNoticReport(SentDate[i], WhatsappNumber[i], "The number is not registered");
                                 }
-                            }
+                            });
+                            #endregion
+                            #region Whatsapp-web.js
+                            //using (var client = new HttpClient())
+                            //{
+                            //    Sender sen = new Sender { sender = SenderId[i], number = WhatsappNumber[i], message = Message[i] };
+                            //    client.BaseAddress = new Uri("http://192.168.100.1:9001/");
+                            //    var response = client.PostAsJsonAsync("send-message", sen).Result;
+                            //    if (response.IsSuccessStatusCode)
+                            //    {
+                            //        Freport.UpdateStatusMessageReport(SentDate[i], WhatsappNumber[i]);
+                            //    }
+                            //    else
+                            //    {
+                            //        if (response.StatusCode.ToString() == "422")
+                            //        {
+                            //            Freport.UpdateSessionNoticReport(SentDate[i], WhatsappNumber[i], "The number is not registered");
+                            //        }
+                            //    }
+                            //}
+                            #endregion
                         }
                     }
                     catch (Exception ex)

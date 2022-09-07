@@ -108,4 +108,3 @@ C:\Users\IT07\source\repos\whatsappmobil\whatsappmobil\obj\Debug\whatsappmobil.c
 C:\Users\IT07\source\repos\whatsappmobil\whatsappmobil\obj\Debug\whatsappmobil.csproj.CopyComplete
 C:\Users\IT07\source\repos\whatsappmobil\whatsappmobil\obj\Debug\whatsappmobil.dll
 C:\Users\IT07\source\repos\whatsappmobil\whatsappmobil\obj\Debug\whatsappmobil.pdb
-C:\Users\IT07\source\repos\whatsappmobil\whatsappmobil\obj\Debug\whatsappmobil.csproj.AssemblyReference.cache
