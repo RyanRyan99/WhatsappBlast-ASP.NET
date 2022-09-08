@@ -318,7 +318,7 @@ namespace whatsappmobil
                         IJobDetail jobMessage = JobBuilder.Create<ScheduledMessage>().WithIdentity("job1", "group1").Build();
                         ITrigger trigger = TriggerBuilder.Create()
                         .WithIdentity("trigger5", "group1")
-                        .StartAt(DateBuilder.FutureDate(3, IntervalUnit.Second)) // use DateBuilder to create a date in the future
+                        .StartAt(DateBuilder.FutureDate(3, IntervalUnit.Minute)) // use DateBuilder to create a date in the future
                         .ForJob(jobMessage) // identify job with its JobKey
                         .Build();
                         schedulerMessage.ScheduleJob(jobMessage, trigger);
