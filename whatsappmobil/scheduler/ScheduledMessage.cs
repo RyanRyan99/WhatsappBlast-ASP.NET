@@ -13,6 +13,7 @@ using whatsappmobil.sender;
 using System.Threading;
 using System.Net.Http.Headers;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace whatsappmobil.scheduler
 {
@@ -319,7 +320,20 @@ namespace whatsappmobil.scheduler
                     }
                     else
                     {
-                        plan.UpdateFailedMessage(senderid, number, strid);
+                        string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                        var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("[" + getresponse + "]");
+                        foreach(var dd in result)
+                        {
+                            string messageAPI = dd.message;
+                            if (messageAPI == "The receiver number is not exists.")
+                            {
+                                plan.UpdateFailedMessage(senderid, number, strid);
+                            }
+                            else
+                            {
+
+                            }
+                        }
                     }
                 });
             }
@@ -351,7 +365,20 @@ namespace whatsappmobil.scheduler
                     }
                     else
                     {
-                        plan.UpdateFailedMessage(senderid, number, strid);
+                        string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                        var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("["+getresponse+"]");
+                        foreach (var dd in result)
+                        {
+                            string messageAPI = dd.message;
+                            if (messageAPI == "The receiver number is not exists.")
+                            {
+                                plan.UpdateFailedMessage(senderid, number, strid);
+                            }
+                            else
+                            {
+
+                            }
+                        }
                     }
                 });
             }

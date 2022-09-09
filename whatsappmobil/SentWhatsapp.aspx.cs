@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace whatsappmobil
 {
@@ -592,7 +593,20 @@ namespace whatsappmobil
                                     }
                                     else
                                     {
-                                        fcn.UpdateSessionNotic(strTrxId, Number[i], "The number is not registered");
+                                        string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                                        var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("[" + getresponse + "]");
+                                        foreach (var dd in result)
+                                        {
+                                            string messageAPI = dd.message;
+                                            if (messageAPI == "The receiver number is not exists.")
+                                            {
+                                                fcn.UpdateSessionNotic(strTrxId, Number[i], "The receiver number is not exists");
+                                            }
+                                            else
+                                            {
+
+                                            }
+                                        }
                                     }
                                 });
                             }
@@ -617,7 +631,20 @@ namespace whatsappmobil
                                     }
                                     else
                                     {
-                                        fcn.UpdateSessionNotic(strTrxId, Number[i], "The number is not registered");
+                                        string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                                        var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("["+getresponse+"]");
+                                        foreach(var dd in result)
+                                        {
+                                            string messageAPI = dd.message;
+                                            if (messageAPI == "The receiver number is not exists.")
+                                            {
+                                                fcn.UpdateSessionNotic(strTrxId, Number[i], "The receiver number is not exists");
+                                            }
+                                            else
+                                            {
+
+                                            }
+                                        }
                                     }
                                 });
                             }
@@ -664,7 +691,20 @@ namespace whatsappmobil
                         }
                         else
                         {
-                            fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
+                            string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                            var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("[" + getresponse + "]");
+                            foreach(var dd in result)
+                            {
+                                string messageAPI = dd.message;
+                                if (messageAPI == "The receiver number is not exists.")
+                                {
+                                    fcn.UpdateSessionNotic(strTrxId, strNumber, "The receiver number is not exists");
+                                }
+                                else
+                                {
+
+                                }
+                            }
                         }
                     });
                 }
@@ -690,7 +730,20 @@ namespace whatsappmobil
                         }
                         else
                         {
-                            fcn.UpdateSessionNotic(strTrxId, strNumber, "The number is not registered");
+                            string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                            var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("[" + getresponse + "]");
+                            foreach(var dd in result)
+                            {
+                                string messageAPI = dd.message;
+                                if (messageAPI == "The receiver number is not exists.")
+                                {
+                                    fcn.UpdateSessionNotic(strTrxId, strNumber, "The receiver number is not exists");
+                                }
+                                else
+                                {
+
+                                }
+                            }
                         }
                     });
                 }

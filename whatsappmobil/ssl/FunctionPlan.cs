@@ -84,7 +84,7 @@ namespace whatsappmobil.ssl
             OracleCommand DBCommand;
             DBConnection.Open();
 
-            var Query = "update trx_whatsapp_message set session_notic = 'number is not registered', status_session = '2' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trxid = '" + strid + "'";
+            var Query = "update trx_whatsapp_message set session_notic = 'The receiver number is not exists', status_session = '2' where sender_id = '" + senderid + "' and wa_number = '" + number + "' and trxid = '" + strid + "'";
             try
             {
                 DBCommand = new OracleCommand(Query, DBConnection);

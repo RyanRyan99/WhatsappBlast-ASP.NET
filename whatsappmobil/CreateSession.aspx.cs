@@ -27,7 +27,7 @@ namespace whatsappmobil
             {
                 BindData();
                 //TestSend();
-                TestMedia();
+                //TestMedia();
             }
         }
 
@@ -284,14 +284,14 @@ namespace whatsappmobil
 
         private void TestSend()
         {
-            string number = "085697111003";
+            string number = "08569711100333";
             string message = "Someone Open Form Create Session ;)";
             if (number.StartsWith("0"))
             {
                 number = "62" + number.Substring(1);
             }
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send?id=dadang");
+            client.BaseAddress = new Uri("http://127.0.0.1:8000/chats/send?id=BNJ01");
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "");
             request.Content = new StringContent("{\"receiver\":\""+number+"\",\"message\":{\"text\": \""+message+"\"}}", Encoding.UTF8,"application/json");
@@ -300,11 +300,24 @@ namespace whatsappmobil
             { 
                 if (responseTask.Result.IsSuccessStatusCode)
                 {
-
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alerterror('Send Message Success', 'success');", true);
                 }
                 else
                 {
-
+                    string getresponse = responseTask.Result.Content.ReadAsStringAsync().Result;
+                    var result = JsonConvert.DeserializeObject<IEnumerable<RootSessionBaileys>>("["+getresponse+"]");
+                    foreach(var dd in result)
+                    {
+                        string messageAPI = dd.message;
+                        if(messageAPI == "The receiver number is not exists.")
+                        {
+                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alerterror('Number is not exists', 'success');", true);
+                        }
+                        else
+                        {
+                            ScriptManager.RegisterStartupScript(this, GetType(), "Popup", "alerterror('Failed to send the message.', 'success');", true);
+                        }
+                    }
                 }
             });
             
